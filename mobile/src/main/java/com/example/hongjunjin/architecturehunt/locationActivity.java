@@ -83,6 +83,8 @@ public class locationActivity extends ActionBarActivity implements
     protected static Button GPSbutton;
     protected static LinearLayout ll;
     protected static Button backButton;
+    protected static Fragment newFragment;
+    protected static FragmentTransaction ft;
 
 
 
@@ -101,6 +103,7 @@ public class locationActivity extends ActionBarActivity implements
         GPSbutton = (Button)findViewById(R.id.GPSbutton);
         backButton = (Button)findViewById(R.id.backButton);
         ll = (LinearLayout)findViewById(R.id.linearLayer);
+        flayout = (FrameLayout)findViewById(R.id.overlay_fragment_container);
 
         buildGoogleApiClient();
         createLocationRequest();
@@ -363,8 +366,39 @@ public class locationActivity extends ActionBarActivity implements
                 R.layout.listitem, rowItems);
 
         lv.setAdapter(adapter);
+
         lv.setOnItemClickListener(this);
 
+        ButtonsOnFragment();
+
+    }
+
+    public void ButtonsOnFragment(){
+
+        GPSbutton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                // Perform action on click
+                Log.d("ADebugTag", "test: " + "GPS is clicked");
+            }
+        });
+
+        compassButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                // Perform action on click
+                Log.d("ADebugTag", "test: " + "Compass is clicked");
+
+            }
+        });
+
+        backButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                // Perform action on click
+                Log.d("ADebugTag", "test: " + "Back is clicked");
+                flayout.setVisibility(View.GONE);
+                ll.setAlpha(1.0f);
+
+            }
+        });
     }
 
     public void sortByDistance(){
@@ -397,24 +431,9 @@ public class locationActivity extends ActionBarActivity implements
         Log.d("ADebugTag", "showList: " + "im in on click");
         item = rowItems.get(position);
 
-        Fragment newFragment = new MyFragment();
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        newFragment = new MyFragment();
+        ft = getFragmentManager().beginTransaction();
         ft.add(R.id.overlay_fragment_container, newFragment).commit();
-
-        GPSbutton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                // Perform action on click
-                Log.d("ADebugTag", "test: " + "GPS is clicked");
-            }
-        });
-
-        compassButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                // Perform action on click
-                Log.d("ADebugTag", "test: " + "Compass is clicked");
-
-            }
-        });
 
     }
 
