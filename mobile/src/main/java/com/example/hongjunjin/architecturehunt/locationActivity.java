@@ -1,14 +1,26 @@
 package com.example.hongjunjin.architecturehunt;
 
 import android.app.Activity;
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AbsoluteLayout;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -21,9 +33,11 @@ import com.google.android.gms.location.LocationServices;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.Text;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -39,7 +53,7 @@ import javax.xml.parsers.ParserConfigurationException;
  * Created by hongjunjin on 7/22/15.
  */
 public class locationActivity extends ActionBarActivity implements
-        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener, AdapterView.OnItemClickListener {
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener, Serializable, AdapterView.OnItemClickListener {
 
     protected static final String restURL = "https://api.flickr.com/services/rest/";
     protected static final String searchMethod = "flickr.photos.search";
@@ -61,6 +75,14 @@ public class locationActivity extends ActionBarActivity implements
     ProgressDialog progress;
     protected static long threadId;
     private List<Thread> threadList;
+    private static final int CONTENT_VIEW_ID = 10101010;
+    protected static RowItem item;
+    protected static FrameLayout flayout;
+    protected static Button compassButton;
+    protected static Button GPSbutton;
+    protected static LinearLayout ll;
+    protected static Button backButton;
+
 
 
     @Override
@@ -73,6 +95,11 @@ public class locationActivity extends ActionBarActivity implements
 
 
         flickr = new Flickr_login();
+        //flayout = (FrameLayout)findViewById(R.id.overlay_fragment_container);
+        compassButton = (Button)findViewById(R.id.compassButton);
+        GPSbutton = (Button)findViewById(R.id.GPSbutton);
+        backButton = (Button)findViewById(R.id.backButton);
+        ll = (LinearLayout)findViewById(R.id.linearLayer);
 
         buildGoogleApiClient();
         createLocationRequest();
@@ -358,9 +385,29 @@ public class locationActivity extends ActionBarActivity implements
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
         Log.d("ADebugTag", "showList: " + "im in on click");
-        RowItem item = rowItems.get(position);
+        item = rowItems.get(position);
+
+        Fragment newFragment = new MyFragment();
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        ft.add(R.id.overlay_fragment_container, newFragment).commit();
+
+        GPSbutton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                // Perform action on click
+                Log.d("ADebugTag", "test: " + "GPS is clicked");
+            }
+        });
+
+        compassButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                // Perform action on click
+                Log.d("ADebugTag", "test: " + "Compass is clicked");
+
+            }
+        });
 
     }
+
 
     public String getLat(){
         return lat;
