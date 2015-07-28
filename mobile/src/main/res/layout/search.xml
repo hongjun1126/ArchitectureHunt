@@ -1,56 +1,110 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent"
-    android:orientation="vertical">
+
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/linearLayer"
+        android:layout_width="match_parent" android:layout_height="match_parent"
+        android:orientation="vertical">
 
 
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent" android:layout_height="wrap_content">
+        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent" android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/radiusText"
+            <TextView
+                android:id="@+id/radiusText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="95dp"
+                android:paddingRight="10dp"
+                android:paddingTop="20dp"
+                android:textSize="18dp"/>
+
+            <Spinner
+                android:id="@+id/radius_spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/radiusText"
+                android:paddingTop="20dp"/>
+
+            <TextView
+                android:id="@+id/sortText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/radiusText"
+                android:paddingLeft="95dp"
+                android:paddingRight="10dp"
+                android:paddingTop="10dp"
+                android:paddingBottom="20dp"
+                android:textSize="18dp"/>
+
+            <Spinner
+                android:id="@+id/sorting_spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/sortText"
+                android:layout_below="@+id/radius_spinner"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                />
+        </RelativeLayout>
+
+        <ListView
+            android:id="@+id/list"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingLeft="95dp"
-            android:paddingRight="10dp"
-            android:paddingTop="20dp"
-            android:textSize="18dp"/>
+            android:layout_height="wrap_content" >
 
-        <Spinner
-            android:id="@+id/radius_spinner"
+        </ListView>
+
+    </LinearLayout>
+
+    <FrameLayout android:id="@+id/overlay_fragment_container"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+
+        <Button
+            android:id="@+id/compassButton"
+            android:layout_height="wrap_content"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toRightOf="@+id/radiusText"
-            android:paddingTop="20dp"/>
+            android:text="Compass"
+            android:layout_gravity="left|center_vertical"
+            android:layout_marginTop="108dp"
+            android:layout_marginLeft="90dp"
 
-        <TextView
-            android:id="@+id/sortText"
+            android:visibility="gone"/>
+
+        <Button
+            android:id="@+id/GPSbutton"
+            android:layout_height="wrap_content"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/radiusText"
-            android:paddingLeft="95dp"
-            android:paddingRight="10dp"
-            android:paddingTop="10dp"
-            android:paddingBottom="20dp"
-            android:textSize="18dp"/>
+            android:text="GPS"
+            android:layout_gravity="left|center_vertical"
+            android:layout_marginTop="108dp"
+            android:layout_marginLeft="180dp"
 
-        <Spinner
-            android:id="@+id/sorting_spinner"
+            android:visibility="gone"/>
+
+        <Button
+            android:id="@+id/backButton"
+            android:layout_height="wrap_content"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toRightOf="@+id/sortText"
-            android:layout_below="@+id/radius_spinner"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"
-            />
-    </RelativeLayout>
-
-    <ListView
-        android:id="@+id/list"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" >
-
-    </ListView>
+            android:text="Back"
+            android:layout_gravity="left|center_vertical"
+            android:layout_marginTop="108dp"
+            android:layout_marginLeft="40dp"
+            android:visibility="gone"/>
 
 
-</LinearLayout>
+    </FrameLayout>
+
+
+
+
+
+
+</merge>
+
+
+
+
+
+

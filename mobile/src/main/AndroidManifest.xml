@@ -19,6 +19,7 @@
 
 
         <activity android:name=".Flickr_login"/>
+        <activity android:name=".selectedActivity"/>
 
 
     </application>
