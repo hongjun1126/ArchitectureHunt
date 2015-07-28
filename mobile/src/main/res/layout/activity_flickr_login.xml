@@ -7,21 +7,36 @@
 
     <TextView android:text="@string/text" android:layout_width="wrap_content"
         android:id="@+id/text"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/verifier_code"
+        android:layout_alignBottom="@+id/verifier_code"
+        android:layout_alignParentStart="true" />
 
 
     <EditText
         android:id="@+id/verifier_code"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/text"
-        android:inputType="textEmailAddress" />
+        android:inputType="textEmailAddress"
+        android:layout_above="@+id/login_button"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="111dp" />
 
     <Button
         android:id="@+id/login_button"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
-        android:text="@string/login"
-        android:layout_below="@+id/verifier_code" />
+        android:text="Authorize"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Get Code"
+        android:id="@+id/launch_login"
+        android:layout_above="@+id/verifier_code"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="126dp" />
 
 </RelativeLayout>
