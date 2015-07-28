@@ -23,7 +23,7 @@ public class MyFragment extends Fragment {
         ImageView img = new ImageView(getActivity());
         img.setImageBitmap(item.getBmp());
 
-
+        locationActivity.flayout.setVisibility(View.VISIBLE);
         locationActivity.GPSbutton.setVisibility(View.VISIBLE);
         locationActivity.compassButton.setVisibility(View.VISIBLE);
         locationActivity.backButton.setVisibility(View.VISIBLE);
