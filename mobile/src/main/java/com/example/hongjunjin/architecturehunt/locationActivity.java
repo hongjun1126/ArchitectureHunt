@@ -24,6 +24,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -135,6 +136,7 @@ public class locationActivity extends ActionBarActivity implements
 
             @Override
             public void onItemSelected(AdapterView<?> parent, View selectedItemView, int pos, long id) {
+                Log.d("ADebugTag", "Value: " + "spinner selected");
 
                 String radius_selected = parent.getItemAtPosition(pos).toString();
                 String radiusNum = radius_selected.substring(0, 1);
@@ -159,6 +161,7 @@ public class locationActivity extends ActionBarActivity implements
 
             @Override
             public void onItemSelected(AdapterView<?> parent, View selectedItemView, int pos, long id) {
+                Log.d("ADebugTag", "Value: " + "spinner selected");
 
                 String sorting_selected = parent.getItemAtPosition(pos).toString();
                 setSort(sorting_selected);
@@ -201,25 +204,32 @@ public class locationActivity extends ActionBarActivity implements
         LocationServices.FusedLocationApi.requestLocationUpdates(
                 mGoogleApiClient, mLocationRequest, this);
     }
-
-    @Override
-    public void onLocationChanged(Location location) {
-        Log.d("ADebugTag", "Value: " + "onLocationChange");
-        Location tempLocation = mCurrentLocation;
-        //Log.d("ADebugTag", "onLcationChange: " + Thread.currentThread().getName());
-
+    void set_new_curr_location(Location location) {
         mCurrentLocation = location;
         String latitude = Double.toString(mCurrentLocation.getLatitude());
         String longitude = Double.toString(mCurrentLocation.getLongitude());
         setLat(latitude);
         setLon(longitude);
+    }
 
-        if (tempLocation != null){
-            searchPhotos(getRadius(), getSort(), getLat(), getLon());
-        }else{
+    @Override
+    public void onLocationChanged(Location location) {
+        Log.d("ADebugTag", "Value: " + "onLocationChange");
+        Location prev_location = null;
+        if (mCurrentLocation != null) {
+            prev_location = new Location(mCurrentLocation);
+        }
+        //Log.d("ADebugTag", "onLcationChange: " + Thread.currentThread().getName());
+        if (prev_location == null) {
+            Log.e("START_SEARCH", ">>>>>>>>>>>>>>CALLING SEARCH PHOTOS");
+            set_new_curr_location(location);
             spinnerHelper();
         }
-
+        else if (location.distanceTo(prev_location) > 50) {
+            Log.e("LOCATION CHANGED", ">>>>>>>>>>>>>>CALLING SEARCH PHOTOS");
+            set_new_curr_location(location);
+            searchPhotos(getRadius(), getSort(), getLat(), getLon());
+        }
     }
 
     @Override
@@ -249,7 +259,7 @@ public class locationActivity extends ActionBarActivity implements
                 System.out.println("t theadId: " + Thread.currentThread().getId());
                 //threadId = Thread.currentThread().getId();
 
-                String perPage = "50";
+                String perPage = "10";
 
                 StringBuffer searchBuffer = new StringBuffer(restURL);
                 searchBuffer.append("?method=");
