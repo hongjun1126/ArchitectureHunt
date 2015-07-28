@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">ArchitectureHunt</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="text">Please Enter Verifier Code</string>
+    <string name="login">Login</string>
+    <string name="location_updated_message">Location updated!</string>
+
+    <string-array name="radius">
+        <item>1 mile</item>
+        <item>2 mile</item>
+        <item>3 mile</item>
+        <item>4 mile</item>
+        <item>5 mile</item>
+    </string-array>
+
+    <string-array name="sorting">
+        <item>Distance</item>
+        <item>Ratings</item>
+    </string-array>
+</resources>
