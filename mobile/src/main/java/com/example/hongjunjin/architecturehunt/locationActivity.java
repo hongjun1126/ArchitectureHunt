@@ -1,8 +1,6 @@
 package com.example.hongjunjin.architecturehunt;
 
-import android.app.Activity;
 import android.app.Fragment;
-import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -10,31 +8,27 @@ import android.location.Location;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AbsoluteLayout;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.wearable.CapabilityApi;
+import com.google.android.gms.wearable.Wearable;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.w3c.dom.Text;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
@@ -45,6 +39,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -59,6 +54,8 @@ public class locationActivity extends ActionBarActivity implements
     protected static final String restURL = "https://api.flickr.com/services/rest/";
     protected static final String searchMethod = "flickr.photos.search";
     protected static final int numberOfThreads = 20;
+    protected static final String CAPABILITY_NAME = "compass";
+    protected static final String RECEIVER_SERVICE_PATH = "/compass";
 
     Location mCurrentLocation;
     LocationRequest mLocationRequest;
@@ -88,6 +85,7 @@ public class locationActivity extends ActionBarActivity implements
 
 
 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
@@ -96,9 +94,7 @@ public class locationActivity extends ActionBarActivity implements
 
         Log.d("ADebugTag", "Value: " + "onCreat");
 
-
         flickr = new Flickr_login();
-        //flayout = (FrameLayout)findViewById(R.id.overlay_fragment_container);
         compassButton = (Button)findViewById(R.id.compassButton);
         GPSbutton = (Button)findViewById(R.id.GPSbutton);
         backButton = (Button)findViewById(R.id.backButton);
@@ -108,6 +104,7 @@ public class locationActivity extends ActionBarActivity implements
         buildGoogleApiClient();
         createLocationRequest();
         this.mGoogleApiClient.connect();
+
 
     }
 
@@ -386,6 +383,7 @@ public class locationActivity extends ActionBarActivity implements
             public void onClick(View v) {
                 // Perform action on click
                 Log.d("ADebugTag", "test: " + "Compass is clicked");
+                sendMessageToWear();
 
             }
         });
@@ -396,9 +394,20 @@ public class locationActivity extends ActionBarActivity implements
                 Log.d("ADebugTag", "test: " + "Back is clicked");
                 flayout.setVisibility(View.GONE);
                 ll.setAlpha(1.0f);
-
+                for (int i = 0; i < ll.getChildCount(); i++) {
+                    View child = ll.getChildAt(i);
+                    child.setEnabled(true);
+                }
             }
         });
+    }
+
+    public void sendMessageToWear(){
+
+        Log.d("ADebugTag", "test: " + "in Message Servce");
+
+        Intent sendMsgIntent = new Intent(this, sendMessage.class);
+        startService(sendMsgIntent);
     }
 
     public void sortByDistance(){
@@ -433,7 +442,12 @@ public class locationActivity extends ActionBarActivity implements
 
         newFragment = new MyFragment();
         ft = getFragmentManager().beginTransaction();
-        ft.add(R.id.overlay_fragment_container, newFragment).commit();
+        ft.replace(R.id.overlay_fragment_container, newFragment).commit();
+
+        for (int i = 0; i < ll.getChildCount(); i++) {
+            View child = ll.getChildAt(i);
+            child.setEnabled(false);
+        }
 
     }
 

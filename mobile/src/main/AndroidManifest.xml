@@ -19,7 +19,7 @@
 
 
         <activity android:name=".Flickr_login"/>
-        <activity android:name=".selectedActivity"/>
+        <service android:name=".sendMessage"/>
 
 
     </application>
