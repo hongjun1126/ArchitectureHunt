@@ -7,19 +7,36 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
+        <!--<activity-->
+            <!--android:name=".locationActivity"-->
+            <!--android:label="@string/app_name" >-->
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN" />-->
+
+                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
+        <!--</activity>-->
         <activity
-            android:name=".locationActivity"
+            android:name=".Flickr_login"
             android:label="@string/app_name" >
             <intent-filter>
+                <action android:name="android.intent.action.VIEW"></action>
+                <category android:name="android.intent.category.DEFAULT"></category>
+                <category android:name="android.intent.category.BROWSABLE"></category>
+                <data android:scheme="my-activity"></data>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".locationActivity"/>
 
+<<<<<<< HEAD
 
         <activity android:name=".Flickr_login"/>
         <service android:name=".sendMessage"/>
+=======
+        <activity android:name=".selectedActivity"/>
+>>>>>>> e2a7f664772f4b303707ea93cf9b9fd0b959133f
 
 
     </application>
