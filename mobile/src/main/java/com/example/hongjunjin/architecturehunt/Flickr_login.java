@@ -2,6 +2,7 @@ package com.example.hongjunjin.architecturehunt;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.PersistableBundle;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,15 +11,21 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import org.scribe.builder.ServiceBuilder;
 import org.scribe.builder.api.FlickrApi;
+import org.scribe.exceptions.OAuthException;
 import org.scribe.model.OAuthRequest;
 import org.scribe.model.Response;
 import org.scribe.model.Token;
 import org.scribe.model.Verb;
 import org.scribe.model.Verifier;
 import org.scribe.oauth.OAuthService;
+
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 
 public class Flickr_login extends ActionBarActivity {
@@ -27,86 +34,79 @@ public class Flickr_login extends ActionBarActivity {
     private static final String FLICKR_SECRET = "92b4fb82980e27be";
     private static final String PROTECTED_RESOURCE_URL = "https://api.flickr.com/services/rest/";
     private Token accessToken;
-    private OAuthService service;
-
-
+    private static OAuthService service;
+    private OAuthRequest request;
+    private Button launch_login_button;
+    private Button authorize_button;
+    private EditText edit;
+    private static Token requestToken;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_flickr_login);
+        launch_login_button = (Button) findViewById(R.id.launch_login);
+        request = new OAuthRequest(Verb.GET, PROTECTED_RESOURCE_URL);
 
+        launch_login_button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        service = new ServiceBuilder()
+                                .provider(FlickrApi.class)
+                                .apiKey(FLICKR_KEY)
+                                .apiSecret(FLICKR_SECRET)
+                                .callback("my-activity://mywebsite.com/")
+                                .build();
+                        // Obtain the Request Token
+                        //Log.d("ADebugTag", "Value: " + "cool");
+                        requestToken = service.getRequestToken();
+                        String authorizationUrl = service.getAuthorizationUrl(requestToken);
+                        //System.out.println(authorizationUrl + "&perms=write");
+                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(authorizationUrl + "&perms=write"));
+                        startActivity(browserIntent);
+                    }
+                }).start();
+            }
+        });
+    }
+
+    @Override
+    protected void onResume() {
+        Uri uri = this.getIntent().getData();
+        super.onResume();
+        if (uri == null || !uri.toString().startsWith("my-activity://mywebsite.com")) {
+            return;
+        }
+
+        final Verifier verifier = new Verifier(uri.getQueryParameter("oauth_verifier"));
         new Thread(new Runnable() {
             @Override
             public void run() {
+                try {
+                    accessToken = service.getAccessToken(requestToken, verifier);
+                } catch (OAuthException exception) {
+                    exception.printStackTrace(new PrintStream(System.out));
+                    Toast failed = Toast.makeText(getApplicationContext(), "Authorization failed.", Toast.LENGTH_SHORT);
+                    failed.show();
+                    return;
+                }
+                request = new OAuthRequest(Verb.GET, PROTECTED_RESOURCE_URL);
+                request.addQuerystringParameter("method", "flickr.test.login");
+                service.signRequest(accessToken, request);
+                Response response = request.send();
+                System.out.println(response.getBody());
 
-                service = new ServiceBuilder()
-                        .provider(FlickrApi.class)
-                        .apiKey(FLICKR_KEY)
-                        .apiSecret(FLICKR_SECRET)
-                        .build();
-
-
-                // Obtain the Request Token
-                //Log.d("ADebugTag", "Value: " + "cool");
-                final Token requestToken = service.getRequestToken();
-
-                String authorizationUrl = service.getAuthorizationUrl(requestToken);
-                System.out.println(authorizationUrl + "&perms=write");
-
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(authorizationUrl));
-                startActivity(browserIntent);
-
-                final EditText edit   = (EditText)findViewById(R.id.verifier_code);
-                final Button button = (Button) findViewById(R.id.login_button);
-                button.setOnClickListener(new View.OnClickListener() {
-                    public void onClick(View v) {
-                        // Perform action on click
-                        String code = edit.getText().toString();
-                        Log.d("ADebugTag", "Value: " + "button is clicked");
-
-                        final Verifier verifier = new Verifier(code);
-
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                accessToken = service.getAccessToken(requestToken, verifier);
-                                OAuthRequest request = new OAuthRequest(Verb.GET, PROTECTED_RESOURCE_URL);
-                                request.addQuerystringParameter("method", "flickr.test.login");
-                                service.signRequest(accessToken, request);
-                                Response response = request.send();
-                                System.out.println(response.getBody());
-
-                                Log.d("ADebugTag", "Value: " + "done log in");
-
-                                startNewService();
-
-
-                            }
-
-                        }).start();
-
-
-                    }
-
-                });
-
-
+                Log.d("ADebugTag", "Value: " + "done log in");
+                startNewService();
             }
-
-
         }).start();
-
-
-
-
     }
 
     public void startNewService(){
-
         Intent GPSService = new Intent(this, locationActivity.class);
         startActivity(GPSService);
-
     }
 
     public String getFlickrKey(){
