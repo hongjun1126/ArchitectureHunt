@@ -30,7 +30,8 @@
         </activity>
         <activity android:name=".locationActivity"/>
 
-        <activity android:name=".selectedActivity"/>
+        <service android:name=".sendMessage"/>
+
 
 
     </application>
