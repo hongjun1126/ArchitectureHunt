@@ -91,9 +91,7 @@ public class locationActivity extends ActionBarActivity implements
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.search);
-
         Log.d("ADebugTag", "Value: " + "onCreat");
-
 
         flickr = new Flickr_login();
         //flayout = (FrameLayout)findViewById(R.id.overlay_fragment_container);
@@ -105,7 +103,11 @@ public class locationActivity extends ActionBarActivity implements
         buildGoogleApiClient();
         createLocationRequest();
         this.mGoogleApiClient.connect();
-
+        progress = new ProgressDialog(this);
+        progress.setMessage("Loading...");
+        progress.setIndeterminate(true);
+        progress.setCancelable(false);
+        progress.show();
     }
 
     public void spinnerHelper(){
@@ -185,8 +187,8 @@ public class locationActivity extends ActionBarActivity implements
     protected void createLocationRequest() {
         Log.d("ADebugTag", "Value: " + "createLocationRequest");
         mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(100000);
-        mLocationRequest.setFastestInterval(5000);
+        mLocationRequest.setInterval(15000);
+        mLocationRequest.setFastestInterval(15000);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
@@ -227,6 +229,7 @@ public class locationActivity extends ActionBarActivity implements
         }
         else if (location.distanceTo(prev_location) > 50) {
             Log.e("LOCATION CHANGED", ">>>>>>>>>>>>>>CALLING SEARCH PHOTOS");
+            progress.show();
             set_new_curr_location(location);
             searchPhotos(getRadius(), getSort(), getLat(), getLon());
         }
@@ -240,15 +243,9 @@ public class locationActivity extends ActionBarActivity implements
     }
 
     public void searchPhotos(final String radius, String sorting, final String lat, final String lon){
-
+        progress.show();
         rowItems = new ArrayList<RowItem>();
         threadList = new ArrayList<Thread>();
-
-        progress = new ProgressDialog(this);
-        progress.setMessage("Loading...");
-        progress.setIndeterminate(true);
-        progress.setCancelable(false);
-        progress.show();
 
         Thread t = new Thread(new Runnable() {
             @Override

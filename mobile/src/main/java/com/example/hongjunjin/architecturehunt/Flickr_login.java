@@ -2,6 +2,7 @@ package com.example.hongjunjin.architecturehunt;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.PersistableBundle;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -22,6 +23,10 @@ import org.scribe.model.Verb;
 import org.scribe.model.Verifier;
 import org.scribe.oauth.OAuthService;
 
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 
 public class Flickr_login extends ActionBarActivity {
 
@@ -29,18 +34,20 @@ public class Flickr_login extends ActionBarActivity {
     private static final String FLICKR_SECRET = "92b4fb82980e27be";
     private static final String PROTECTED_RESOURCE_URL = "https://api.flickr.com/services/rest/";
     private Token accessToken;
-    private OAuthService service;
-
+    private static OAuthService service;
+    private OAuthRequest request;
     private Button launch_login_button;
     private Button authorize_button;
     private EditText edit;
-    private Token requestToken;
+    private static Token requestToken;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_flickr_login);
         launch_login_button = (Button) findViewById(R.id.launch_login);
+        request = new OAuthRequest(Verb.GET, PROTECTED_RESOURCE_URL);
+
         launch_login_button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 new Thread(new Runnable() {
@@ -50,6 +57,7 @@ public class Flickr_login extends ActionBarActivity {
                                 .provider(FlickrApi.class)
                                 .apiKey(FLICKR_KEY)
                                 .apiSecret(FLICKR_SECRET)
+                                .callback("my-activity://mywebsite.com/")
                                 .build();
                         // Obtain the Request Token
                         //Log.d("ADebugTag", "Value: " + "cool");
@@ -62,50 +70,38 @@ public class Flickr_login extends ActionBarActivity {
                 }).start();
             }
         });
-        edit = (EditText)findViewById(R.id.verifier_code);
-        authorize_button = (Button) findViewById(R.id.login_button);
-        authorize_button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                // Perform action on click
-                Log.d("ADebugTag", "Value: " + "button is clicked");
-                Toast null_code = Toast.makeText(getApplicationContext(), "Please enter a code", Toast.LENGTH_SHORT);
-                final Toast bad_code = Toast.makeText(getApplicationContext(), "Could not authorize. Please check your code.", Toast.LENGTH_SHORT);
-                final Toast success = Toast.makeText(getApplicationContext(), "Login successful!", Toast.LENGTH_SHORT);
+    }
 
-                String code = edit.getText().toString();
-                if (code.length() == 0) {
-                    null_code.show();
+    @Override
+    protected void onResume() {
+        Uri uri = this.getIntent().getData();
+        super.onResume();
+        if (uri == null || !uri.toString().startsWith("my-activity://mywebsite.com")) {
+            return;
+        }
+
+        final Verifier verifier = new Verifier(uri.getQueryParameter("oauth_verifier"));
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    accessToken = service.getAccessToken(requestToken, verifier);
+                } catch (OAuthException exception) {
+                    exception.printStackTrace(new PrintStream(System.out));
+                    Toast failed = Toast.makeText(getApplicationContext(), "Authorization failed.", Toast.LENGTH_SHORT);
+                    failed.show();
                     return;
                 }
-                if (requestToken == null) {
-                    bad_code.show();
-                    return;
-                }
-                final Verifier verifier = new Verifier(code);
+                request = new OAuthRequest(Verb.GET, PROTECTED_RESOURCE_URL);
+                request.addQuerystringParameter("method", "flickr.test.login");
+                service.signRequest(accessToken, request);
+                Response response = request.send();
+                System.out.println(response.getBody());
 
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            accessToken = service.getAccessToken(requestToken, verifier);
-                        }
-                        catch (OAuthException exception) {
-                            bad_code.show();
-                            return;
-                        }
-                        OAuthRequest request = new OAuthRequest(Verb.GET, PROTECTED_RESOURCE_URL);
-                        request.addQuerystringParameter("method", "flickr.test.login");
-                        service.signRequest(accessToken, request);
-                        Response response = request.send();
-                        System.out.println(response.getBody());
-
-                        Log.d("ADebugTag", "Value: " + "done log in");
-                        success.show();
-                        startNewService();
-                    }
-                }).start();
+                Log.d("ADebugTag", "Value: " + "done log in");
+                startNewService();
             }
-        });
+        }).start();
     }
 
     public void startNewService(){
