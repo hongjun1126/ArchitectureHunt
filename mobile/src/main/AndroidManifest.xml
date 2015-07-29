@@ -30,13 +30,8 @@
         </activity>
         <activity android:name=".locationActivity"/>
 
-<<<<<<< HEAD
-
-        <activity android:name=".Flickr_login"/>
         <service android:name=".sendMessage"/>
-=======
-        <activity android:name=".selectedActivity"/>
->>>>>>> e2a7f664772f4b303707ea93cf9b9fd0b959133f
+
 
 
     </application>
