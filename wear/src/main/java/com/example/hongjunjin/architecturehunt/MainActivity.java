@@ -2,6 +2,7 @@ package com.example.hongjunjin.architecturehunt;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Matrix;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -35,13 +36,15 @@ public class MainActivity extends Activity implements SensorEventListener {
     private boolean mLastAccelerometerSet = false;
     private boolean mLastMagnetometerSet = false;
     private float[] mR = new float[9];
+
     private float[] mOrientation = new float[3];
     private float mCurrentDegree = 0f;
+    private float start = 0f;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.round_activity_main);
         mSensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         mMagnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
@@ -63,30 +66,29 @@ public class MainActivity extends Activity implements SensorEventListener {
     @Override
     public void onSensorChanged(SensorEvent event) {
         if (event.sensor == mAccelerometer) {
-            System.arraycopy(event.values, 0, mLastAccelerometer, 0, event.values.length);
-            mLastAccelerometerSet = true;
-        } else if (event.sensor == mMagnetometer) {
-            System.arraycopy(event.values, 0, mLastMagnetometer, 0, event.values.length);
-            mLastMagnetometerSet = true;
+            mLastAccelerometer = event.values.clone();
         }
-        if (mLastAccelerometerSet && mLastMagnetometerSet) {
-            SensorManager.getRotationMatrix(mR, null, mLastAccelerometer, mLastMagnetometer);
-            SensorManager.getOrientation(mR, mOrientation);
-            float azimuthInRadians = mOrientation[0];
-            float azimuthInDegress = (float)(Math.toDegrees(azimuthInRadians)+360)%360;
-            RotateAnimation ra = new RotateAnimation(
-                    mCurrentDegree,
-                    -azimuthInDegress,
-                    Animation.RELATIVE_TO_SELF, 0.5f,
-                    Animation.RELATIVE_TO_SELF,
-                    0.5f);
-
-            ra.setDuration(250);
-
-            ra.setFillAfter(true);
-
-            mPointer.startAnimation(ra);
-            mCurrentDegree = -azimuthInDegress;
+        if (event.sensor == mMagnetometer) {
+            mLastMagnetometer = event.values.clone();
+        }
+        if (mLastAccelerometer != null && mLastMagnetometer!= null) {
+            float R[] = new float[9];
+            float I[] = new float[9];
+            if (SensorManager.getRotationMatrix(R, I, mLastAccelerometer, mLastMagnetometer)) {
+                float orientation[] = new float[3];
+                SensorManager.getOrientation(R, orientation);
+                float azimuthInDegrees = (float)(Math.toDegrees(orientation[0]));
+                Log.d("SensorChanged", "Curr orientation in degrees: " + Float.toString(azimuthInDegrees));
+                RotateAnimation ra = new RotateAnimation(
+                        -azimuthInDegrees,
+                        -azimuthInDegrees,
+                        Animation.RELATIVE_TO_SELF, 0.5f,
+                        Animation.RELATIVE_TO_SELF,
+                        0.5f);
+                ra.setDuration(0);
+                ra.setFillAfter(true);
+                mPointer.startAnimation(ra);
+            }
         }
     }
 
