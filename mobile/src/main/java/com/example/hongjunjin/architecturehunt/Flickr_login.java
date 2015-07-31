@@ -107,6 +107,7 @@ public class Flickr_login extends ActionBarActivity {
     public void startNewService(){
         Intent GPSService = new Intent(this, locationActivity.class);
         startActivity(GPSService);
+        finish();
     }
 
     public String getFlickrKey(){
