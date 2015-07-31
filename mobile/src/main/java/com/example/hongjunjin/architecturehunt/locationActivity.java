@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -31,10 +32,12 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -406,6 +409,14 @@ public class locationActivity extends ActionBarActivity implements
         Log.d("ADebugTag", "test: " + "in Message Servce");
 
         Intent sendMsgIntent = new Intent(this, sendMessage.class);
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        item.getBmp().compress(Bitmap.CompressFormat.PNG, 100, stream);
+        byte[] pic = stream.toByteArray();
+        sendMsgIntent.putExtra("pic", pic);
+        ByteBuffer loc = ByteBuffer.allocate(8);
+        loc.putFloat(0, item.getLoc()[0]);
+        loc.putFloat(4, item.getLoc()[1]);
+        sendMsgIntent.putExtra("loc", loc.array());
         startService(sendMsgIntent);
     }
 
