@@ -11,12 +11,14 @@ public class RowItem {
     private String title;
     private float dist;
     private int favoriteNum;
+    private float[] loc;
 
-    public RowItem(Bitmap bmp, String title, float distance, int favoriteNum){
+    public RowItem(Bitmap bmp, String title, float distance, int favoriteNum, float[] loc){
         this.bmp = bmp;
         this.title = title;
         this.dist = distance;
         this.favoriteNum = favoriteNum;
+        this.loc = loc;
     }
 
     public Bitmap getBmp() {
@@ -33,6 +35,7 @@ public class RowItem {
         return dist;
     }
 
+    public float[] getLoc() { return loc; }
 
     public double roundOff(float dist){
         return Math.round(dist * 10.0) / 10.0;
