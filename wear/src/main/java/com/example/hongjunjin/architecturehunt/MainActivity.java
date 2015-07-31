@@ -2,6 +2,7 @@ package com.example.hongjunjin.architecturehunt;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -40,6 +41,12 @@ public class MainActivity extends Activity implements SensorEventListener {
     private float[] mOrientation = new float[3];
     private float mCurrentDegree = 0f;
     private float start = 0f;
+    private Bitmap pic;
+    private float[] loc;
+    private ImageView bg_pic;
+    private TextView lat;
+    private TextView lng;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +56,20 @@ public class MainActivity extends Activity implements SensorEventListener {
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         mMagnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
         mPointer = (ImageView) findViewById(R.id.pointer);
+        Intent intent = getIntent();
+        pic = intent.getParcelableExtra("pic");
+        loc = intent.getFloatArrayExtra("loc");
+        if (pic != null && loc != null) {
+            bg_pic = (ImageView) findViewById(R.id.pic);
+            bg_pic.setImageBitmap(pic);
+            lat = (TextView) findViewById(R.id.lat);
+            lng = (TextView) findViewById(R.id.lng);
+            lat.setText(Float.toString(loc[0]));
+            lng.setText(Float.toString(loc[1]));
+        }
+        Log.d("ADebugTag", "IN EXPLORATION MODE");
+
+
     }
 
     protected void onResume() {

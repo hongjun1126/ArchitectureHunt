@@ -51,6 +51,7 @@ public class messengerService extends WearableListenerService {
                 float_loc[0] = buffer.getFloat();
                 float_loc[1] = buffer.getFloat();
                 intent.putExtra("loc", float_loc);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
                 pic = null;
                 loc = null;
