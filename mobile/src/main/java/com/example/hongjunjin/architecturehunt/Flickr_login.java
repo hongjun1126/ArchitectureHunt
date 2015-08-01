@@ -1,8 +1,8 @@
 package com.example.hongjunjin.architecturehunt;
 
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.PersistableBundle;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -22,18 +22,16 @@ import org.scribe.model.Token;
 import org.scribe.model.Verb;
 import org.scribe.model.Verifier;
 import org.scribe.oauth.OAuthService;
-
 import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+
 
 
 public class Flickr_login extends ActionBarActivity {
 
     protected static final String FLICKR_KEY = "fc0baa54c996e02f0576193c6c4b313a";
-    private static final String FLICKR_SECRET = "92b4fb82980e27be";
+    protected static final String FLICKR_SECRET = "92b4fb82980e27be";
     private static final String PROTECTED_RESOURCE_URL = "https://api.flickr.com/services/rest/";
-    private Token accessToken;
+    protected static Token accessToken;
     private static OAuthService service;
     private OAuthRequest request;
     private Button launch_login_button;
@@ -99,7 +97,9 @@ public class Flickr_login extends ActionBarActivity {
                 System.out.println(response.getBody());
 
                 Log.d("ADebugTag", "Value: " + "done log in");
+
                 startNewService();
+
             }
         }).start();
     }
@@ -108,6 +108,7 @@ public class Flickr_login extends ActionBarActivity {
         Intent GPSService = new Intent(this, locationActivity.class);
         startActivity(GPSService);
     }
+
 
     public String getFlickrKey(){
         return this.FLICKR_KEY;

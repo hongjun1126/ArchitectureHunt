@@ -20,11 +20,12 @@
         </activity>
 
         <service
-            android:name=".messengerService" >
+            android:name=".receiveMessage" >
             <intent-filter>
                 <action android:name="com.google.android.gms.wearable.BIND_LISTENER" />
             </intent-filter>
         </service>
+        <service android:name=".sendMessage"/>
 
 
     </application>
