@@ -12,6 +12,9 @@ public class RowItem {
     private float dist;
     private int favoriteNum;
     private float[] loc;
+    boolean navigating = false;
+    boolean navigated = false;
+
 
     public RowItem(Bitmap bmp, String title, float distance, int favoriteNum, float[] loc){
         this.bmp = bmp;
@@ -48,4 +51,5 @@ public class RowItem {
     public String getFavInString(){
         return Integer.toString(favoriteNum);
     }
+
 }

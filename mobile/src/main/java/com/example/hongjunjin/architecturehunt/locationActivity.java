@@ -1,15 +1,22 @@
 package com.example.hongjunjin.architecturehunt;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.location.Location;
+import android.media.Image;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.AnimationSet;
+import android.view.animation.TranslateAnimation;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -17,6 +24,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -30,6 +38,7 @@ import com.google.android.gms.wearable.Wearable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.Text;
 import org.xml.sax.SAXException;
 
 import java.io.ByteArrayOutputStream;
@@ -51,7 +60,7 @@ import javax.xml.parsers.ParserConfigurationException;
 /**
  * Created by hongjunjin on 7/22/15.
  */
-public class locationActivity extends ActionBarActivity implements
+public class locationActivity extends Activity implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener, Serializable, AdapterView.OnItemClickListener {
 
     protected static final String restURL = "https://api.flickr.com/services/rest/";
@@ -83,9 +92,13 @@ public class locationActivity extends ActionBarActivity implements
     protected static Button GPSbutton;
     protected static LinearLayout ll;
     protected static Button backButton;
+    protected TextView nav_title;
+    protected ImageView nav_img;
+    protected LinearLayout curr_nav_container;
+
     protected static Fragment newFragment;
     protected static FragmentTransaction ft;
-
+    private SharedPreferences sharedPref;
 
 
 
@@ -96,12 +109,16 @@ public class locationActivity extends ActionBarActivity implements
         setContentView(R.layout.search);
         Log.d("ADebugTag", "Value: " + "onCreat");
 
+
         flickr = new Flickr_login();
         compassButton = (Button)findViewById(R.id.compassButton);
         GPSbutton = (Button)findViewById(R.id.GPSbutton);
         backButton = (Button)findViewById(R.id.backButton);
         ll = (LinearLayout)findViewById(R.id.linearLayer);
         flayout = (FrameLayout)findViewById(R.id.overlay_fragment_container);
+        nav_img = (ImageView) findViewById(R.id.nav_img);
+        nav_title = (TextView) findViewById(R.id.nav_title);
+        curr_nav_container = (LinearLayout) findViewById(R.id.curr_nav_container);
 
         buildGoogleApiClient();
         createLocationRequest();
@@ -192,8 +209,8 @@ public class locationActivity extends ActionBarActivity implements
     protected void createLocationRequest() {
         Log.d("ADebugTag", "Value: " + "createLocationRequest");
         mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(15000);
-        mLocationRequest.setFastestInterval(15000);
+        mLocationRequest.setInterval(5000);
+        mLocationRequest.setFastestInterval(5000);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
@@ -222,6 +239,8 @@ public class locationActivity extends ActionBarActivity implements
     @Override
     public void onLocationChanged(Location location) {
         Log.d("ADebugTag", "Value: " + "onLocationChange");
+//        Log.d("ADebugTAG", "lOCATION:" + Double.toString(location.getLatitude()) + ", " + Double.toString(location.getLongitude()));
+
         Location prev_location = null;
         if (mCurrentLocation != null) {
             prev_location = new Location(mCurrentLocation);
@@ -232,7 +251,11 @@ public class locationActivity extends ActionBarActivity implements
             set_new_curr_location(location);
             spinnerHelper();
         }
-        else if (location.distanceTo(prev_location) > 50) {
+        else if (location.distanceTo(prev_location) > 150) {
+            Log.e("LOCATION From", Double.toString(prev_location.getLatitude()) + ", " + Double.toString(prev_location.getLongitude()));
+            Log.e("LOCATION CHANGED", Double.toString(location.getLatitude()) + ", " + Double.toString(location.getLongitude()));
+            Log.e("LOCATION CHANGED", Float.toString(location.distanceTo(prev_location)));
+
             Log.e("LOCATION CHANGED", ">>>>>>>>>>>>>>CALLING SEARCH PHOTOS");
             progress.show();
             set_new_curr_location(location);
@@ -278,6 +301,7 @@ public class locationActivity extends ActionBarActivity implements
                 searchBuffer.append(lon);
                 searchBuffer.append("&media=photo&per_page=");
                 searchBuffer.append(perPage);
+//                searchBuffer.append("&sort=interestingness-desc");
                 String searchURL = searchBuffer.toString();
 
                 try {
@@ -346,6 +370,7 @@ public class locationActivity extends ActionBarActivity implements
 
     }
 
+    private CustomList adapter;
     public void showList(String sorting){
 
 
@@ -361,12 +386,35 @@ public class locationActivity extends ActionBarActivity implements
 
         lv = (ListView) findViewById(R.id.list);
 
-        CustomList adapter = new CustomList(this,
+        adapter = new CustomList(this,
                 R.layout.listitem, rowItems);
 
         lv.setAdapter(adapter);
 
         lv.setOnItemClickListener(this);
+        lv.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+                if (curr_nav_container.getVisibility() == View.VISIBLE) {
+                    if (scrollState == SCROLL_STATE_IDLE) {
+                        TranslateAnimation anim = new TranslateAnimation(0, 0, 0, curr_nav_container.getMeasuredHeight());
+                        anim.setDuration(250);
+                        anim.setFillAfter(true);
+                        curr_nav_container.startAnimation(anim);
+                    } else {
+                        TranslateAnimation anim = new TranslateAnimation(0, 0, curr_nav_container.getMeasuredHeight(), 0);
+                        anim.setDuration(250);
+                        anim.setFillAfter(true);
+                        curr_nav_container.startAnimation(anim);
+                    }
+                }
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+
+            }
+        });
 
         ButtonsOnFragment();
 
@@ -386,6 +434,40 @@ public class locationActivity extends ActionBarActivity implements
                 // Perform action on click
                 Log.d("ADebugTag", "test: " + "Compass is clicked");
                 sendMessageToWear();
+                for (RowItem r_item : rowItems) {
+                    if (r_item.navigating) {
+                        r_item.navigating = false;
+                    }
+                }
+                item.navigating = true;
+                adapter.notifyDataSetChanged();
+                Bitmap img = item.getBmp();
+                Bitmap icon;
+                if (img.getWidth() >= img.getHeight()){
+                    icon = Bitmap.createBitmap(
+                            img, img.getWidth()/2 - img.getHeight()/2,
+                            0,
+                            img.getHeight(), img.getHeight()
+                    );
+                }else{
+                    icon = Bitmap.createBitmap(
+                            img, 0,
+                            img.getHeight()/2 - img.getWidth()/2,
+                            img.getWidth(), img.getWidth()
+                    );
+                }
+                icon = Bitmap.createScaledBitmap(icon, curr_nav_container.getMeasuredHeight(), curr_nav_container.getMeasuredHeight(), true);
+                nav_img.setImageBitmap(icon);
+                nav_title.setText(item.getTitle());
+                TranslateAnimation anim = new TranslateAnimation( 0, 0, curr_nav_container.getMeasuredHeight(), 0);
+                anim.setDuration(250);
+                anim.setFillAfter(true);
+
+                curr_nav_container.startAnimation(anim);
+                curr_nav_container.setVisibility(View.VISIBLE);
+                showList(getSort());
+                backButton.performClick();
+
 
             }
         });
@@ -460,7 +542,6 @@ public class locationActivity extends ActionBarActivity implements
         }
 
     }
-
 
     public String getLat(){
         return lat;
