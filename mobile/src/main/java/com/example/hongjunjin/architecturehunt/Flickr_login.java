@@ -1,6 +1,9 @@
 package com.example.hongjunjin.architecturehunt;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.PersistableBundle;
 import android.support.v7.app.ActionBarActivity;
@@ -28,7 +31,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 
-public class Flickr_login extends ActionBarActivity {
+public class Flickr_login extends Activity {
 
     protected static final String FLICKR_KEY = "fc0baa54c996e02f0576193c6c4b313a";
     private static final String FLICKR_SECRET = "92b4fb82980e27be";
@@ -40,10 +43,16 @@ public class Flickr_login extends ActionBarActivity {
     private Button authorize_button;
     private EditText edit;
     private static Token requestToken;
+    private SharedPreferences sharedPref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        sharedPref = getPreferences(Context.MODE_PRIVATE);
+        if (sharedPref.getString("access_token", null) != null && sharedPref.getString("access_secret", null) != null) {
+            startNewService();
+            finish();
+        }
         setContentView(R.layout.activity_flickr_login);
         launch_login_button = (Button) findViewById(R.id.launch_login);
         request = new OAuthRequest(Verb.GET, PROTECTED_RESOURCE_URL);
@@ -86,6 +95,10 @@ public class Flickr_login extends ActionBarActivity {
             public void run() {
                 try {
                     accessToken = service.getAccessToken(requestToken, verifier);
+                    SharedPreferences.Editor editor = sharedPref.edit();
+                    editor.putString("access_token", accessToken.getToken());
+                    editor.putString("access_secret", accessToken.getSecret());
+                    editor.commit();
                 } catch (OAuthException exception) {
                     exception.printStackTrace(new PrintStream(System.out));
                     Toast failed = Toast.makeText(getApplicationContext(), "Authorization failed.", Toast.LENGTH_SHORT);
