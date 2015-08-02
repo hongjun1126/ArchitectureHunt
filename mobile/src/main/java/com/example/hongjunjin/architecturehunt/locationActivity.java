@@ -11,6 +11,7 @@ import android.graphics.Bitmap;
 import android.hardware.GeomagneticField;
 import android.location.Location;
 import android.media.Image;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -46,6 +47,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -445,6 +447,10 @@ public class locationActivity extends Activity implements
             public void onClick(View v) {
                 // Perform action on click
                 Log.d("ADebugTag", "test: " + "GPS is clicked");
+                Uri gmmIntentUri = Uri.parse("google.navigation:q="+item.getLoc()[0]+", "+item.getLoc()[1]+"&mode=w");
+                Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+                mapIntent.setPackage("com.google.android.apps.maps");
+                startActivity(mapIntent);
             }
         });
 
