@@ -27,7 +27,11 @@
         </service>
         <service android:name=".sendMessage"/>
         <service android:name=".sendMessageCamera"/>
-
+        <service android:name=".LocalService">
+            <!--<intent-filter>-->
+                <!--<action android:name="messenger" />-->
+            <!--</intent-filter>-->
+        </service>
 
     </application>
 

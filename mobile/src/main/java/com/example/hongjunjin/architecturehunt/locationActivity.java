@@ -8,8 +8,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.hardware.GeomagneticField;
 import android.location.Location;
 import android.media.Image;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -45,6 +47,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -73,6 +76,7 @@ public class locationActivity extends Activity implements
     Location mCurrentLocation;
     LocationRequest mLocationRequest;
     private GoogleApiClient mGoogleApiClient;
+    private boolean mRequestingLocationUpdates;
 
     protected static String lon;
     protected static String lat;
@@ -100,7 +104,9 @@ public class locationActivity extends Activity implements
     protected static Fragment newFragment;
     protected static FragmentTransaction ft;
     private SharedPreferences sharedPref;
-
+    private boolean navigating = false;
+    private Location nav_loc;
+    private Button stop_nav;
 
 
     @Override
@@ -120,6 +126,18 @@ public class locationActivity extends Activity implements
         nav_img = (ImageView) findViewById(R.id.nav_img);
         nav_title = (TextView) findViewById(R.id.nav_title);
         curr_nav_container = (LinearLayout) findViewById(R.id.curr_nav_container);
+        stop_nav = (Button) findViewById(R.id.stop_nav);
+        stop_nav.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                navigating = false;
+                item.navigating = false;
+                showList(getSort());
+                stop_nav.setVisibility(View.INVISIBLE);
+                curr_nav_container.setVisibility(View.INVISIBLE);
+                sendMessageToWear_fin();
+            }
+        });
 
         buildGoogleApiClient();
         createLocationRequest();
@@ -226,6 +244,7 @@ public class locationActivity extends Activity implements
     }
 
     protected void startLocationUpdates() {
+        mRequestingLocationUpdates = true;
         LocationServices.FusedLocationApi.requestLocationUpdates(
                 mGoogleApiClient, mLocationRequest, this);
     }
@@ -241,7 +260,9 @@ public class locationActivity extends Activity implements
     public void onLocationChanged(Location location) {
         //Log.d("ADebugTag", "Value: " + "onLocationChange");
 //        Log.d("ADebugTAG", "lOCATION:" + Double.toString(location.getLatitude()) + ", " + Double.toString(location.getLongitude()));
-
+        if (navigating) {
+            get_dist_rot(location, nav_loc);
+        }
         Location prev_location = null;
         if (mCurrentLocation != null) {
             prev_location = new Location(mCurrentLocation);
@@ -427,6 +448,11 @@ public class locationActivity extends Activity implements
             public void onClick(View v) {
                 // Perform action on click
                 Log.d("ADebugTag", "test: " + "GPS is clicked");
+                backButton.performClick();
+                Uri gmmIntentUri = Uri.parse("google.navigation:q="+item.getLoc()[0]+", "+item.getLoc()[1]+"&mode=w");
+                Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+                mapIntent.setPackage("com.google.android.apps.maps");
+                startActivity(mapIntent);
             }
         });
 
@@ -434,7 +460,12 @@ public class locationActivity extends Activity implements
             public void onClick(View v) {
                 // Perform action on click
                 Log.d("ADebugTag", "test: " + "Compass is clicked");
+                navigating = true;
+                nav_loc = new Location("");
+                nav_loc.setLatitude(item.getLoc()[0]);
+                nav_loc.setLongitude(item.getLoc()[1]);
                 sendMessageToWear();
+                get_dist_rot(mCurrentLocation, nav_loc);
                 for (RowItem r_item : rowItems) {
                     if (r_item.navigating) {
                         r_item.navigating = false;
@@ -444,28 +475,29 @@ public class locationActivity extends Activity implements
                 adapter.notifyDataSetChanged();
                 Bitmap img = item.getBmp();
                 Bitmap icon;
-                if (img.getWidth() >= img.getHeight()){
+                if (img.getWidth() >= img.getHeight()) {
                     icon = Bitmap.createBitmap(
-                            img, img.getWidth()/2 - img.getHeight()/2,
+                            img, img.getWidth() / 2 - img.getHeight() / 2,
                             0,
                             img.getHeight(), img.getHeight()
                     );
-                }else{
+                } else {
                     icon = Bitmap.createBitmap(
                             img, 0,
-                            img.getHeight()/2 - img.getWidth()/2,
+                            img.getHeight() / 2 - img.getWidth() / 2,
                             img.getWidth(), img.getWidth()
                     );
                 }
                 icon = Bitmap.createScaledBitmap(icon, curr_nav_container.getMeasuredHeight(), curr_nav_container.getMeasuredHeight(), true);
                 nav_img.setImageBitmap(icon);
                 nav_title.setText(item.getTitle());
-                TranslateAnimation anim = new TranslateAnimation( 0, 0, curr_nav_container.getMeasuredHeight(), 0);
+                TranslateAnimation anim = new TranslateAnimation(0, 0, curr_nav_container.getMeasuredHeight(), 0);
                 anim.setDuration(250);
-                anim.setFillAfter(true);
+//                anim.setFillAfter(true);
 
                 curr_nav_container.startAnimation(anim);
                 curr_nav_container.setVisibility(View.VISIBLE);
+                stop_nav.setVisibility(View.VISIBLE);
                 showList(getSort());
                 backButton.performClick();
 
@@ -487,6 +519,14 @@ public class locationActivity extends Activity implements
         });
     }
 
+    public void get_dist_rot(Location curr, Location dest) {
+        float distance_to = curr.distanceTo(dest);
+        float bearing = curr.bearingTo(dest);
+        float heading = curr.getBearing();
+        float compass_rotation = (360+((bearing + 360) % 360)-heading) % 360;
+        sendMessageToWear2(distance_to, compass_rotation);
+    }
+
     public void sendMessageToWear(){
 
         Log.d("ADebugTag", "test: " + "in Message Servce");
@@ -506,6 +546,23 @@ public class locationActivity extends Activity implements
         sendMsgIntent.putExtra("photoId", idByte);
         startService(sendMsgIntent);
     }
+
+    public void sendMessageToWear2(float distance, float compass_rotation){
+
+        Log.d("ADebugTag", "test: " + "in Message Servce 2");
+
+        Intent sendMsgIntent = new Intent(this, sendMessage2.class);
+        sendMsgIntent.putExtra("distance", distance);
+        sendMsgIntent.putExtra("rot", compass_rotation);
+        startService(sendMsgIntent);
+    }
+
+    public void sendMessageToWear_fin(){
+        Log.d("ADebugTag", "test: " + "in Message Servce Fin");
+        Intent sendMsgIntent = new Intent(this, sendMessage_fin.class);
+        startService(sendMsgIntent);
+    }
+
 
     public void sortByDistance(){
 
@@ -607,5 +664,29 @@ public class locationActivity extends Activity implements
 
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        stopLocationUpdates();
+    }
 
+    protected void stopLocationUpdates() {
+        LocationServices.FusedLocationApi.removeLocationUpdates(
+                mGoogleApiClient, this);
+        mRequestingLocationUpdates = false;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (mGoogleApiClient.isConnected() && !mRequestingLocationUpdates) {
+            startLocationUpdates();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mGoogleApiClient.disconnect();
+    }
 }

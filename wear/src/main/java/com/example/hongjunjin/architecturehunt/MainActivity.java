@@ -2,7 +2,12 @@ package com.example.hongjunjin.architecturehunt;
 
 import android.app.Activity;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.hardware.Sensor;
@@ -10,16 +15,24 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
+import android.os.Handler;
+import android.os.IBinder;
+import android.os.Message;
+import android.os.Messenger;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.wearable.view.WatchViewStub;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import com.google.android.gms.common.ConnectionResult;
@@ -27,6 +40,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.wearable.CapabilityApi;
 import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.Wearable;
+import com.google.android.gms.wearable.WearableListenerService;
 
 import java.util.Set;
 
@@ -53,6 +67,9 @@ public class MainActivity extends Activity implements SensorEventListener {
     private String photoId;
 
     protected static NotificationManagerCompat notificationManager;
+
+    private float dest_dist = 0;
+    private float dest_rot = 0;
 
 
     @Override
@@ -81,21 +98,49 @@ public class MainActivity extends Activity implements SensorEventListener {
             lng.setText(Float.toString(loc[1]));
         }
         Log.d("ADebugTag", "IN EXPLORATION MODE");
-        notification();
-
-
+        LocalBroadcastManager.getInstance(this).registerReceiver(
+                mMessageReceiver, new IntentFilter("new_dist_rot"));
     }
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (pic != null && loc!=null) {
+                Log.d("ADebugTag", "received the right broadcast from messenger");
+                Bundle data = intent.getBundleExtra("data");
+                dest_dist = data.getFloat("distance");
+                Log.d("DestDISTANCE", Float.toString(dest_dist));
+
+                dest_rot = data.getFloat("rot");
+                Log.d("DestROT", Float.toString(dest_rot));
+                TextView dist = (TextView) findViewById(R.id.dist);
+                dist.setText(Integer.toString(Math.round(dest_dist)) + "m");
+                if (dest_dist < 20) {
+                    atDestination();
+                }
+            }
+        }
+    };
+
+    protected void atDestination(){
+    //DO SOMETHING
+        notification();
+        finish();
+    }
+
 
     protected void onResume() {
         super.onResume();
         mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_GAME);
         mSensorManager.registerListener(this, mMagnetometer, SensorManager.SENSOR_DELAY_GAME);
+        LocalBroadcastManager.getInstance(this).registerReceiver(
+                mMessageReceiver, new IntentFilter("new_dist_loc"));
     }
 
     protected void onPause() {
         super.onPause();
         mSensorManager.unregisterListener(this, mAccelerometer);
         mSensorManager.unregisterListener(this, mMagnetometer);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
     }
 
     @Override
@@ -113,10 +158,14 @@ public class MainActivity extends Activity implements SensorEventListener {
                 float orientation[] = new float[3];
                 SensorManager.getOrientation(R, orientation);
                 float azimuthInDegrees = (float)(Math.toDegrees(orientation[0]));
-                Log.d("SensorChanged", "Curr orientation in degrees: " + Float.toString(azimuthInDegrees));
+//                Log.d("SensorChanged", "Curr orientation in degrees: " + Float.toString(azimuthInDegrees));
+                float rot = 0;
+                if (dest_rot != 0) {
+                    rot = dest_rot;
+                }
                 RotateAnimation ra = new RotateAnimation(
-                        -azimuthInDegrees,
-                        -azimuthInDegrees,
+                        rot - azimuthInDegrees,
+                        rot - azimuthInDegrees,
                         Animation.RELATIVE_TO_SELF, 0.5f,
                         Animation.RELATIVE_TO_SELF,
                         0.5f);

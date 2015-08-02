@@ -18,7 +18,7 @@ import java.util.Set;
 /**
  * Created by hongjunjin on 7/28/15.
  */
-public class sendMessage extends Service {
+public class sendMessage2 extends Service {
 
     private GoogleApiClient messageAPIclient;
     protected static final String RECEIVER_SERVICE_PATH = "/compass";
@@ -29,7 +29,7 @@ public class sendMessage extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         // Kick off new work to do
 
-        Log.d("ADebugTag", "test: " + "in sendMessage");
+        Log.d("ADebugTag", "test: " + "in sendMessage2");
         start_intent = intent;
 
         this.messageAPIclient = new GoogleApiClient.Builder(this)
@@ -47,12 +47,17 @@ public class sendMessage extends Service {
                                                 CapabilityApi.FILTER_REACHABLE).await();
                                 Set<Node> nodes = capResult.getCapability().getNodes();
                                 for (Node node : nodes) {
-                                    Wearable.MessageApi.sendMessage(messageAPIclient, node.getId(), RECEIVER_SERVICE_PATH + "/pic",
-                                            start_intent.getByteArrayExtra("pic"));
-                                    Wearable.MessageApi.sendMessage(messageAPIclient, node.getId(), RECEIVER_SERVICE_PATH + "/photoId",
-                                            start_intent.getByteArrayExtra("photoId"));
-                                    Wearable.MessageApi.sendMessage(messageAPIclient, node.getId(), RECEIVER_SERVICE_PATH + "/loc",
-                                            start_intent.getByteArrayExtra("loc"));
+                                    if (start_intent.getFloatExtra("distance", -1) != -1) {
+                                        float temp = start_intent.getFloatExtra("distance", -1);
+                                        byte[] distance = ByteBuffer.allocate(4).putFloat(temp).array();
+                                        Wearable.MessageApi.sendMessage(messageAPIclient, node.getId(), RECEIVER_SERVICE_PATH + "/distance",
+                                                distance);
+                                        temp = start_intent.getFloatExtra("rot", 0);
+                                        byte[] rot = ByteBuffer.allocate(4).putFloat(temp).array();
+                                        Wearable.MessageApi.sendMessage(messageAPIclient, node.getId(), RECEIVER_SERVICE_PATH + "/rot",
+                                                rot);
+                                        Log.d("ADebugTag", "DISTROT Message sent");
+                                    }
                                 }
                             }
                         }).start();
