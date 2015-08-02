@@ -216,7 +216,7 @@ public class MyThread extends Thread {
                         title = "";
                     }
 
-                    RowItem item = new RowItem(bmp, title, distance, favNum, loc);
+                    RowItem item = new RowItem(bmp, title, distance, favNum, loc, photoId);
                     rowItems.add(item);
 
 

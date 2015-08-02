@@ -16,6 +16,7 @@ import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.WearableListenerService;
 
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 
 
 /**
@@ -25,8 +26,14 @@ public class messengerService extends WearableListenerService {
 
     private byte[] pic;
     private byte[] loc;
+    private byte[] photoId;
+    protected static String nodeId;
+    private Intent intent;
+    private int counter = 0;
+
     private byte[] distance;
     private byte[] rot;
+
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -39,32 +46,30 @@ public class messengerService extends WearableListenerService {
     @Override
     public void onMessageReceived(MessageEvent messageEvent) {
 
+        nodeId = messageEvent.getSourceNodeId();
+
         Log.d("ADebugTag", "Message received on wear");
         String name = messageEvent.getPath();
         if (name.contentEquals("/compass/pic")) {
             Log.d("ADebugTag", "message_path: " + name);
             pic = messageEvent.getData();
-        } else if (name.contentEquals("/compass/loc")) {
+
+            counter += 1;
+        }else if(name.contentEquals("/compass/photoId")){
             Log.d("ADebugTag", "message_path: " + name);
+            photoId = messageEvent.getData();
+
+            Log.d("ADebugTag", "photoId : " + photoId);
+            counter += 1;
+        }
+        else if (name.contentEquals("/compass/loc")) {
+            Log.d("ADebugTag", "message_path: " + name);
+            Log.d("ADebugTag", "pic : " + pic);
+            Log.d("ADebugTag", "loc : " + loc);
+            Log.d("ADebugTag", "photoId : " + photoId);
             loc = messageEvent.getData();
-            if (pic != null && loc != null) {
-                byte[] the_pic = pic;
-                byte[] the_loc = loc;
+            counter += 1;
 
-                Intent intent = new Intent(this, MainActivity.class);
-                Bitmap bm = BitmapFactory.decodeByteArray(the_pic, 0, the_pic.length);
-                intent.putExtra("pic", bm);
-                ByteBuffer buffer = ByteBuffer.wrap(the_loc);
-                float[] float_loc = new float[2];
-                float_loc[0] = buffer.getFloat();
-                float_loc[1] = buffer.getFloat();
-                intent.putExtra("loc", float_loc);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
-
-                pic = null;
-                loc = null;
-            }
         } else if (name.contentEquals("/compass/distance")) {
             Log.d("ADebugTag", "message_path: " + name);
             distance = messageEvent.getData();
@@ -94,9 +99,47 @@ public class messengerService extends WearableListenerService {
             }
         } else if (name.contentEquals("/compass/finish")) {
             Log.d("ADebugTag", "message_path: " + name);
-            Intent intent = new Intent(this, Home.class);
+            Intent intent = new Intent(this, LocalService.class);
+            intent.putExtra("finish", true);
+            startService(intent);
+        }
+
+        if (counter == 3){
+            add(messageEvent);
+            counter = 0;
+        }
+    }
+
+    public void add(MessageEvent messageEvent){
+        if (pic != null && loc != null && photoId != null) {
+            byte[] the_pic = pic;
+            byte[] the_loc = loc;
+            byte[] id = photoId;
+
+            Log.d("ADebugTag", "ready for compass launch");
+            intent = new Intent(this, MainActivity.class);
+            Bitmap bm = BitmapFactory.decodeByteArray(the_pic, 0, the_pic.length);
+            intent.putExtra("pic", bm);
+            ByteBuffer buffer = ByteBuffer.wrap(the_loc);
+            float[] float_loc = new float[2];
+            float_loc[0] = buffer.getFloat();
+            float_loc[1] = buffer.getFloat();
+            intent.putExtra("loc", float_loc);
+
+            String pictureId =new String(id, StandardCharsets.US_ASCII);
+            intent.putExtra("photoId", pictureId);
+
+            Log.d("ADebugTag", "messenger SErvice: " + pictureId);
+
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
+
+            pic = null;
+            loc = null;
+            photoId = null;
+
+
         }
+
     }
 }

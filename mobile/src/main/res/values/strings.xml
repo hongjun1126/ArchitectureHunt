@@ -5,6 +5,10 @@
     <string name="action_settings">Settings</string>
     <string name="text">Please Enter Verifier Code</string>
     <string name="login">Login</string>
+    <string name="flickr">Flickr</string>
+    <string name="post">Post</string>
+    <string name="back">Back</string>
+    <string name="afterPost">The picture is successfully uploaded!</string>
     <string name="location_updated_message">Location updated!</string>
 
     <string-array name="radius">

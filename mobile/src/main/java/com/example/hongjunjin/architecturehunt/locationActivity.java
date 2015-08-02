@@ -50,6 +50,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -86,7 +87,7 @@ public class locationActivity extends Activity implements
     private ListView lv;
     protected static List<RowItem> rowItems;
     protected static NodeList nodeList;
-    ProgressDialog progress;
+    protected static ProgressDialog progress;
     protected static long threadId;
     private List<Thread> threadList;
     private static final int CONTENT_VIEW_ID = 10101010;
@@ -257,7 +258,7 @@ public class locationActivity extends Activity implements
 
     @Override
     public void onLocationChanged(Location location) {
-        Log.d("ADebugTag", "Value: " + "onLocationChange");
+        //Log.d("ADebugTag", "Value: " + "onLocationChange");
 //        Log.d("ADebugTAG", "lOCATION:" + Double.toString(location.getLatitude()) + ", " + Double.toString(location.getLongitude()));
         if (navigating) {
             get_dist_rot(location, nav_loc);
@@ -539,6 +540,10 @@ public class locationActivity extends Activity implements
         loc.putFloat(0, item.getLoc()[0]);
         loc.putFloat(4, item.getLoc()[1]);
         sendMsgIntent.putExtra("loc", loc.array());
+        byte[] idByte = item.getPhotoId().getBytes(StandardCharsets.US_ASCII);
+
+       // Log.d("ADebugTag", "sendMessage photoId: " + item.getPhotoId());
+        sendMsgIntent.putExtra("photoId", idByte);
         startService(sendMsgIntent);
     }
 
@@ -682,6 +687,7 @@ public class locationActivity extends Activity implements
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        sendMessageToWear_fin();
         mGoogleApiClient.disconnect();
     }
 }

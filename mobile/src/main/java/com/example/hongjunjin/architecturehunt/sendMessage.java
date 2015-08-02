@@ -47,13 +47,12 @@ public class sendMessage extends Service {
                                                 CapabilityApi.FILTER_REACHABLE).await();
                                 Set<Node> nodes = capResult.getCapability().getNodes();
                                 for (Node node : nodes) {
-                                    if (start_intent.getByteArrayExtra("pic") != null) {
-                                        Wearable.MessageApi.sendMessage(messageAPIclient, node.getId(), RECEIVER_SERVICE_PATH + "/pic",
-                                                start_intent.getByteArrayExtra("pic"));
-                                        Wearable.MessageApi.sendMessage(messageAPIclient, node.getId(), RECEIVER_SERVICE_PATH + "/loc",
-                                                start_intent.getByteArrayExtra("loc"));
-                                        Log.d("ADebugTag", "PICLOC Message sent");
-                                    }
+                                    Wearable.MessageApi.sendMessage(messageAPIclient, node.getId(), RECEIVER_SERVICE_PATH + "/pic",
+                                            start_intent.getByteArrayExtra("pic"));
+                                    Wearable.MessageApi.sendMessage(messageAPIclient, node.getId(), RECEIVER_SERVICE_PATH + "/photoId",
+                                            start_intent.getByteArrayExtra("photoId"));
+                                    Wearable.MessageApi.sendMessage(messageAPIclient, node.getId(), RECEIVER_SERVICE_PATH + "/loc",
+                                            start_intent.getByteArrayExtra("loc"));
                                 }
                             }
                         }).start();

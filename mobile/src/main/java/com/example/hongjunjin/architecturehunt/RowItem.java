@@ -14,14 +14,16 @@ public class RowItem {
     private float[] loc;
     boolean navigating = false;
     boolean navigated = false;
+    private String photoId;
 
 
-    public RowItem(Bitmap bmp, String title, float distance, int favoriteNum, float[] loc){
+    public RowItem(Bitmap bmp, String title, float distance, int favoriteNum, float[] loc, String photoId){
         this.bmp = bmp;
         this.title = title;
         this.dist = distance;
         this.favoriteNum = favoriteNum;
         this.loc = loc;
+        this.photoId = photoId;
     }
 
     public Bitmap getBmp() {
@@ -50,6 +52,10 @@ public class RowItem {
 
     public String getFavInString(){
         return Integer.toString(favoriteNum);
+    }
+
+    public String getPhotoId(){
+        return photoId;
     }
 
 }

@@ -33,6 +33,17 @@
         <activity android:name=".locationActivity"/>
 
         <service android:name=".sendMessage"/>
+        <service
+            android:name=".receiveMessage" >
+            <intent-filter>
+                <action android:name="com.google.android.gms.wearable.BIND_LISTENER" />
+            </intent-filter>
+        </service>
+        <activity android:name=".cameraActivity"/>
+        <service android:name=".addFavorite"/>
+        <activity android:name=".postUpload"/>
+
+
         <service android:name=".sendMessage2"/>
         <service android:name=".sendMessage_fin"/>
 
