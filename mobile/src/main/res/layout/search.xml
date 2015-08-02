@@ -51,6 +51,17 @@
                     android:paddingTop="10dp"
                     android:paddingBottom="10dp"
                     />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="STOP NAV"
+                    android:id="@+id/stop_nav"
+                    android:layout_alignParentRight="true"
+                    android:layout_margin="5dp"
+                    android:layout_alignParentEnd="false"
+                    android:layout_centerVertical="true"
+                    android:visibility="invisible" />
             </RelativeLayout>
 
             <ListView
