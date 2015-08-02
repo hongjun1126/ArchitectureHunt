@@ -687,6 +687,7 @@ public class locationActivity extends Activity implements
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        sendMessageToWear_fin();
         mGoogleApiClient.disconnect();
     }
 }
