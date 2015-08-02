@@ -36,7 +36,12 @@
         <service android:name=".sendMessage2"/>
         <service android:name=".sendMessage_fin"/>
 
-
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyBkKs2LfM0EQv9a17lL55aOnwNm5ddRhXE" />
 
     </application>
 
