@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -22,6 +23,7 @@ public class sendMessage extends Service {
         // Kick off new work to do
 
 
+        Toast.makeText(this, "Successfully favorite it!", Toast.LENGTH_SHORT).show();
         RECEIVER_SERVICE_PATH = intent.getStringExtra("key");
 
 

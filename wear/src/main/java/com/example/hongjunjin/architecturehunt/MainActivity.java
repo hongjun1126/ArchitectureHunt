@@ -100,6 +100,10 @@ public class MainActivity extends Activity implements SensorEventListener {
         Log.d("ADebugTag", "IN EXPLORATION MODE");
         LocalBroadcastManager.getInstance(this).registerReceiver(
                 mMessageReceiver, new IntentFilter("new_dist_rot"));
+
+        notification();
+
+
     }
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
@@ -123,7 +127,7 @@ public class MainActivity extends Activity implements SensorEventListener {
 
     protected void atDestination(){
     //DO SOMETHING
-        notification();
+        //notification();
         finish();
     }
 
@@ -206,8 +210,9 @@ public class MainActivity extends Activity implements SensorEventListener {
                 .setContentText("You've arrived.")
                 .setContentIntent(cameraPendingIntent)
                 .setContentIntent(favoritePendingIntent)
-                .addAction(R.drawable.flickr, "Favorite", favoritePendingIntent)
+                .addAction(R.drawable.flickraaa, "Favorite", favoritePendingIntent)
                 .addAction(R.drawable.camera, "Take a picture", cameraPendingIntent);
+
 
 
         notificationManager = NotificationManagerCompat.from(this);
