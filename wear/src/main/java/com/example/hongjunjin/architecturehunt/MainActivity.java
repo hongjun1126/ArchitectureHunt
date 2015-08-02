@@ -35,12 +35,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.wearable.CapabilityApi;
-import com.google.android.gms.wearable.Node;
-import com.google.android.gms.wearable.Wearable;
-import com.google.android.gms.wearable.WearableListenerService;
 
 import java.util.Set;
 
@@ -104,6 +98,7 @@ public class MainActivity extends Activity implements SensorEventListener {
 
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
 
     }
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
