@@ -447,6 +447,7 @@ public class locationActivity extends Activity implements
             public void onClick(View v) {
                 // Perform action on click
                 Log.d("ADebugTag", "test: " + "GPS is clicked");
+                backButton.performClick();
                 Uri gmmIntentUri = Uri.parse("google.navigation:q="+item.getLoc()[0]+", "+item.getLoc()[1]+"&mode=w");
                 Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
                 mapIntent.setPackage("com.google.android.apps.maps");
