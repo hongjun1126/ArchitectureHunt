@@ -25,11 +25,18 @@ public class LocalService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d("LocalService", "Received start id " + startId + ": " + intent);
-
-        Intent broadcast = new Intent("new_dist_rot");
-        broadcast.putExtra("data", intent.getBundleExtra("data"));
-        LocalBroadcastManager.getInstance(this).sendBroadcast(broadcast);
-        Log.d("LocalService", "DISTROT Sent to MainActivity");
+        if (intent.getBooleanExtra("finish", false)) {
+            Log.d("ADebugTag", "received the finish message from messengerService");
+            Intent finish = new Intent("new_dist_rot");
+            finish.putExtra("finish", true);
+            LocalBroadcastManager.getInstance(this).sendBroadcast(finish);
+        }
+        else {
+            Intent broadcast = new Intent("new_dist_rot");
+            broadcast.putExtra("data", intent.getBundleExtra("data"));
+            LocalBroadcastManager.getInstance(this).sendBroadcast(broadcast);
+            Log.d("LocalService", "DISTROT Sent to MainActivity");
+        }
         return START_STICKY;
     }
 

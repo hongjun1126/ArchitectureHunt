@@ -67,6 +67,7 @@ public class messengerService extends WearableListenerService {
             Log.d("ADebugTag", "pic : " + pic);
             Log.d("ADebugTag", "loc : " + loc);
             Log.d("ADebugTag", "photoId : " + photoId);
+            loc = messageEvent.getData();
             counter += 1;
 
         } else if (name.contentEquals("/compass/distance")) {
@@ -98,9 +99,9 @@ public class messengerService extends WearableListenerService {
             }
         } else if (name.contentEquals("/compass/finish")) {
             Log.d("ADebugTag", "message_path: " + name);
-            Intent intent = new Intent(this, Home.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
+            Intent intent = new Intent(this, LocalService.class);
+            intent.putExtra("finish", true);
+            startService(intent);
         }
 
         if (counter == 3){
@@ -110,8 +111,6 @@ public class messengerService extends WearableListenerService {
     }
 
     public void add(MessageEvent messageEvent){
-
-        loc = messageEvent.getData();
         if (pic != null && loc != null && photoId != null) {
             byte[] the_pic = pic;
             byte[] the_loc = loc;

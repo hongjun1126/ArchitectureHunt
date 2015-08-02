@@ -100,11 +100,16 @@ public class MainActivity extends Activity implements SensorEventListener {
         Log.d("ADebugTag", "IN EXPLORATION MODE");
         LocalBroadcastManager.getInstance(this).registerReceiver(
                 mMessageReceiver, new IntentFilter("new_dist_rot"));
+
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (pic != null && loc!=null) {
+            if (intent.getBooleanExtra("finish", false)) {
+                Log.d("ADebugTag", "received the finish broadcast from messenger");
+                finish();
+            } else if (pic != null && loc!=null) {
                 Log.d("ADebugTag", "received the right broadcast from messenger");
                 Bundle data = intent.getBundleExtra("data");
                 dest_dist = data.getFloat("distance");
