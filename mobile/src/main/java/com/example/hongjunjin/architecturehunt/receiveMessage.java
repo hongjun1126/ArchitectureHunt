@@ -21,9 +21,15 @@ public class receiveMessage extends WearableListenerService {
             cameraIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(cameraIntent);
 
-        }else if (messageEvent.getPath().equals("favorite")){
+        }else{
             Log.d("ADebugTag", "test: " + "in favorite");
+            String photoId = messageEvent.getPath();
 
+            Log.d("ADebugTag", "receiveMessage photoId: " + photoId);
+
+            Intent addFavIntent = new Intent(this, addFavorite.class);
+            addFavIntent.putExtra("photoId", photoId);
+            startService(addFavIntent);
 
         }
 

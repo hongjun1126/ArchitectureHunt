@@ -22,12 +22,14 @@ public class sendMessage extends Service {
     private GoogleApiClient messageAPIclient;
     protected static final String RECEIVER_SERVICE_PATH = "/compass";
     protected static final String CAPABILITY_NAME = "compass";
+    private Intent start_intent;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         // Kick off new work to do
 
         Log.d("ADebugTag", "test: " + "in sendMessage");
+        start_intent = intent;
 
         this.messageAPIclient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
@@ -44,8 +46,15 @@ public class sendMessage extends Service {
                                                 CapabilityApi.FILTER_REACHABLE).await();
                                 Set<Node> nodes = capResult.getCapability().getNodes();
                                 for (Node node : nodes) {
-                                    Wearable.MessageApi.sendMessage(messageAPIclient, node.getId(), RECEIVER_SERVICE_PATH,
-                                            null);
+
+
+                                    Wearable.MessageApi.sendMessage(messageAPIclient, node.getId(), RECEIVER_SERVICE_PATH + "/pic",
+                                            start_intent.getByteArrayExtra("pic"));
+                                    Wearable.MessageApi.sendMessage(messageAPIclient, node.getId(), RECEIVER_SERVICE_PATH + "/photoId",
+                                            start_intent.getByteArrayExtra("photoId"));
+                                    Wearable.MessageApi.sendMessage(messageAPIclient, node.getId(), RECEIVER_SERVICE_PATH + "/loc",
+                                            start_intent.getByteArrayExtra("loc"));
+
                                 }
                             }
                         }).start();

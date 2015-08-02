@@ -1,6 +1,7 @@
 package com.example.hongjunjin.architecturehunt;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -52,6 +53,7 @@ public class cameraActivity extends Activity {
     static int CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE = 200;
     protected final static String UPLOAD_URL = "https://up.flickr.com/services/upload/";
     protected static  Bitmap bitmap = null;
+    protected static ProgressDialog progress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,11 +96,18 @@ public class cameraActivity extends Activity {
                 final EditText title = (EditText) findViewById(R.id.title);
                 final EditText description = (EditText) findViewById(R.id.desEdit);
 
+                progress = new ProgressDialog(this);
+                progress.setMessage("Uploading...");
+                progress.setIndeterminate(true);
+                progress.setCancelable(false);
+
+
                 Button button = (Button) findViewById(R.id.postButton);
                 button.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
                         // Perform action on click
 
+                        progress.show();
                         Log.d("ADebugTag", "test: " + "post button is clicked");
 
                         new Thread(new Runnable() {
@@ -106,7 +115,7 @@ public class cameraActivity extends Activity {
                             public void run() {
                                 try {
                                     OAuth auth = new OAuth();
-                                    auth.setToken(new OAuthToken(Flickr_login.accessToken.getToken(), Flickr_login.accessToken.getSecret()));
+                                    auth.setToken(new OAuthToken(Flickr_login.sharedPref.getString("access_token", null), Flickr_login.sharedPref.getString("access_secret", null)));
 
                                     RequestContext.getRequestContext().setOAuth(auth);
 
@@ -126,6 +135,7 @@ public class cameraActivity extends Activity {
                                     Log.d("ADebugTag", "OAuth:: " + RequestContext.getRequestContext().getOAuth());
 
                                     up.upload("emulator", bitmapdata, uploadMetaData);
+                                    progress.dismiss();
 
                                     startSearch();
 
@@ -138,8 +148,6 @@ public class cameraActivity extends Activity {
                                 }
                             }
                         }).start();
-
-
 
                     }
                 });
@@ -172,10 +180,8 @@ public class cameraActivity extends Activity {
 
 
     public void startSearch(){
-
-        Intent searchIntent = new Intent(this, locationActivity.class);
-        startActivity(searchIntent);
-
+        Intent postUploadActivity = new Intent(this, postUpload.class);
+        startActivity(postUploadActivity);
     }
 
 

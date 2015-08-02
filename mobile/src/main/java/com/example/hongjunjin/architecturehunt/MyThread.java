@@ -206,6 +206,7 @@ public class MyThread extends Thread {
                     float lat1 = Float.parseFloat(lat);
                     float lng1 = Float.parseFloat(lon);
                     distance = distFrom(lat1, lng1, lat2, lng2);
+                    float loc[] = new float[]{lat2, lng2};
 
 
                     Node titleNode = photoDoc.getDocumentElement().getChildNodes().item(1).getChildNodes().item(3).getChildNodes().item(0);
@@ -215,7 +216,7 @@ public class MyThread extends Thread {
                         title = "";
                     }
 
-                    RowItem item = new RowItem(bmp, title, distance, favNum);
+                    RowItem item = new RowItem(bmp, title, distance, favNum, loc, photoId);
                     rowItems.add(item);
 
 

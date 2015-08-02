@@ -1,6 +1,5 @@
 package com.example.hongjunjin.architecturehunt;
 
-import android.app.Activity;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,7 +11,8 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.wearable.Wearable;
 
 
-public class sendMessage extends Service {
+public class sendMessageCamera extends Service {
+
 
     private GoogleApiClient mGoogleApiClient;
     private String RECEIVER_SERVICE_PATH;
@@ -21,9 +21,9 @@ public class sendMessage extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         // Kick off new work to do
 
+        MainActivity.notificationManager.cancel(7);
 
         RECEIVER_SERVICE_PATH = intent.getStringExtra("key");
-
 
         Log.d("ADebugTag", "sendMessage photoId: " + RECEIVER_SERVICE_PATH);
 
@@ -63,9 +63,8 @@ public class sendMessage extends Service {
         return START_STICKY;
     }
 
-    @Override
+        @Override
     public IBinder onBind(Intent intent) {
         return null;
     }
-
 }
