@@ -17,14 +17,20 @@
                 android:paddingLeft="95dp"
                 android:paddingRight="10dp"
                 android:paddingTop="20dp"
-                android:textSize="18dp"/>
+                android:textSize="18dp"
+                android:textColorHint="#ffbaceff"
+                android:background="#ffffffed" />
 
             <Spinner
                 android:id="@+id/radius_spinner"
-                android:layout_width="wrap_content"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_toRightOf="@+id/radiusText"
-                android:paddingTop="20dp"/>
+                android:paddingTop="20dp"
+                android:textSize="18dp"
+                android:dropDownSelector="#ffc8daff"
+                android:background="#ffb7b7ff"
+                android:popupBackground="#ffb7b7ff" />
 
             <TextView
                 android:id="@+id/sortText"
@@ -35,70 +41,70 @@
                 android:paddingRight="10dp"
                 android:paddingTop="10dp"
                 android:paddingBottom="20dp"
-                android:textSize="18dp"/>
+                android:textSize="18dp"
+                android:background="#fffffff7" />
 
             <Spinner
                 android:id="@+id/sorting_spinner"
-                android:layout_width="wrap_content"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_toRightOf="@+id/sortText"
                 android:layout_below="@+id/radius_spinner"
                 android:paddingTop="10dp"
                 android:paddingBottom="10dp"
-                />
+                android:dropDownSelector="#ffffffff"
+                android:background="#ffd694ff"
+                android:popupBackground="#ffd694ff" />
         </RelativeLayout>
+
+        <FrameLayout android:id="@+id/overlay_fragment_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/compassButton"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="Compass"
+                android:layout_gravity="left|center_vertical"
+                android:layout_marginTop="108dp"
+                android:layout_marginLeft="130dp"
+
+                android:visibility="gone"/>
+
+            <Button
+                android:id="@+id/GPSbutton"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="GPS"
+                android:layout_gravity="left|center_vertical"
+                android:layout_marginTop="108dp"
+                android:layout_marginLeft="220dp"
+
+                android:visibility="gone"/>
+
+            <Button
+                android:id="@+id/backButton"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="Back"
+                android:layout_gravity="left|center_vertical"
+                android:layout_marginTop="108dp"
+                android:layout_marginLeft="40dp"
+                android:visibility="gone"/>
+
+
+        </FrameLayout>
 
         <ListView
             android:id="@+id/list"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
+            android:layout_height="wrap_content"
+            android:background="#ffefffb6">
 
         </ListView>
 
     </LinearLayout>
-
-    <FrameLayout android:id="@+id/overlay_fragment_container"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent">
-
-        <Button
-            android:id="@+id/compassButton"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:text="Compass"
-            android:layout_gravity="left|center_vertical"
-            android:layout_marginTop="108dp"
-            android:layout_marginLeft="130dp"
-
-            android:visibility="gone"/>
-
-        <Button
-            android:id="@+id/GPSbutton"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:text="GPS"
-            android:layout_gravity="left|center_vertical"
-            android:layout_marginTop="108dp"
-            android:layout_marginLeft="220dp"
-
-            android:visibility="gone"/>
-
-        <Button
-            android:id="@+id/backButton"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:text="Back"
-            android:layout_gravity="left|center_vertical"
-            android:layout_marginTop="108dp"
-            android:layout_marginLeft="40dp"
-            android:visibility="gone"/>
-
-
-    </FrameLayout>
-
-
-
-
 
 
 </merge>
