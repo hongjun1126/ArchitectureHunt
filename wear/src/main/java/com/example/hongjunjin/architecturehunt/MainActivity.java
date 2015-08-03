@@ -99,6 +99,8 @@ public class MainActivity extends Activity implements SensorEventListener {
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
+        notification();
+
 
     }
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
@@ -209,7 +211,7 @@ public class MainActivity extends Activity implements SensorEventListener {
                 .setContentText("You've arrived.")
                 .setContentIntent(cameraPendingIntent)
                 .setContentIntent(favoritePendingIntent)
-                .addAction(R.drawable.flickraaa, "Favorite", favoritePendingIntent)
+                .addAction(R.drawable.flickrccc, "Favorite", favoritePendingIntent)
                 .addAction(R.drawable.camera, "Take a picture", cameraPendingIntent);
 
 

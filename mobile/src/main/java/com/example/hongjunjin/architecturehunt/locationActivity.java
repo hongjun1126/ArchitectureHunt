@@ -23,6 +23,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -163,13 +164,13 @@ public class locationActivity extends Activity implements
 
         Spinner radius_spinner = (Spinner) findViewById(R.id.radius_spinner);
         ArrayAdapter<CharSequence> radius_adapter = ArrayAdapter.createFromResource(this,
-                R.array.radius, android.R.layout.simple_spinner_item);
+                R.array.radius, R.layout.spinner_item);
         radius_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         radius_spinner.setAdapter(radius_adapter);
 
         Spinner sorting_spinner = (Spinner) findViewById(R.id.sorting_spinner);
         final ArrayAdapter<CharSequence> sorting_adapter = ArrayAdapter.createFromResource(this,
-                R.array.sorting, android.R.layout.simple_spinner_item);
+                R.array.sorting, R.layout.spinner_item);
         sorting_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sorting_spinner.setAdapter(sorting_adapter);
 
