@@ -11,7 +11,7 @@
         android:layout_marginTop="100dp"
         android:textSize="20dp"
         android:typeface="sans"
-        android:textColor="#FF3856FF"
+        android:textColor="@color/Black"
         android:layout_centerHorizontal="true"
         android:text="@string/afterPost"/>
 

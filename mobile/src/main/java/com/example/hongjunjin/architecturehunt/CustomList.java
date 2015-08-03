@@ -74,7 +74,7 @@ public class CustomList extends ArrayAdapter<RowItem> {
         holder.imageView.setImageBitmap(rowItem.getBmp());
         holder.txtDist.setText(rowItem.getDistInString());
         holder.favNumber.setText(rowItem.getFavInString());
-        holder.imageStar.setImageResource(R.drawable.flickraaa);
+        holder.imageStar.setImageResource(R.drawable.flickrccc);
 
         return convertView;
     }
