@@ -668,7 +668,9 @@ public class locationActivity extends Activity implements
     @Override
     protected void onPause() {
         super.onPause();
-        stopLocationUpdates();
+        if (mGoogleApiClient.isConnected() && mRequestingLocationUpdates) {
+            stopLocationUpdates();
+        }
     }
 
     protected void stopLocationUpdates() {
