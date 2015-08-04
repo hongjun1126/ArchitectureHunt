@@ -96,6 +96,9 @@ public class locationActivity extends Activity implements
     protected static FrameLayout flayout;
     protected static Button compassButton;
     protected static Button GPSbutton;
+    protected static ImageView frag_img;
+    protected static TextView frag_name;
+
     protected static LinearLayout ll;
     protected static Button backButton;
     protected TextView nav_title;
@@ -122,6 +125,8 @@ public class locationActivity extends Activity implements
         compassButton = (Button)findViewById(R.id.compassButton);
         GPSbutton = (Button)findViewById(R.id.GPSbutton);
         backButton = (Button)findViewById(R.id.backButton);
+        frag_img = (ImageView)findViewById(R.id.frag_img);
+        frag_name = (TextView) findViewById(R.id.frag_name);
         ll = (LinearLayout)findViewById(R.id.linearLayer);
         flayout = (FrameLayout)findViewById(R.id.overlay_fragment_container);
         nav_img = (ImageView) findViewById(R.id.nav_img);
@@ -510,7 +515,7 @@ public class locationActivity extends Activity implements
             public void onClick(View v) {
                 // Perform action on click
                 Log.d("ADebugTag", "test: " + "Back is clicked");
-                flayout.setVisibility(View.GONE);
+                flayout.setVisibility(View.INVISIBLE);
                 ll.setAlpha(1.0f);
                 for (int i = 0; i < ll.getChildCount(); i++) {
                     View child = ll.getChildAt(i);
@@ -668,7 +673,7 @@ public class locationActivity extends Activity implements
     @Override
     protected void onPause() {
         super.onPause();
-        if (mGoogleApiClient.isConnected() && mRequestingLocationUpdates) {
+        if (mGoogleApiClient.isConnected() && mRequestingLocationUpdates && !navigating) {
             stopLocationUpdates();
         }
     }
@@ -690,6 +695,9 @@ public class locationActivity extends Activity implements
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if (mGoogleApiClient.isConnected() && mRequestingLocationUpdates) {
+            stopLocationUpdates();
+        }
         sendMessageToWear_fin();
         mGoogleApiClient.disconnect();
     }

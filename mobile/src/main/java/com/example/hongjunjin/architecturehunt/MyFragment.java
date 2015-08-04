@@ -1,6 +1,7 @@
 package com.example.hongjunjin.architecturehunt;
 
 import android.app.Fragment;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,20 +16,17 @@ import android.widget.ImageView;
 public class MyFragment extends Fragment {
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         RowItem item = locationActivity.item;
+        Bitmap img = item.getBmp();
+        float height = locationActivity.frag_img.getMeasuredHeight();
+        float scale = height / img.getHeight();
 
-        ImageView img = new ImageView(getActivity());
-        img.setImageBitmap(item.getBmp());
-
+        img = Bitmap.createScaledBitmap(img, Math.round(img.getWidth() * scale), Math.round(height), true);
+        locationActivity.frag_img.setImageBitmap(img);
+        locationActivity.frag_name.setText(item.getTitle());
         locationActivity.flayout.setVisibility(View.VISIBLE);
-        locationActivity.GPSbutton.setVisibility(View.VISIBLE);
-        locationActivity.compassButton.setVisibility(View.VISIBLE);
-        locationActivity.backButton.setVisibility(View.VISIBLE);
-        locationActivity.ll.setAlpha(0.3f);
-
-        return img;
     }
+
 }

@@ -134,7 +134,7 @@ public class cameraActivity extends Activity {
 
                                     Log.d("ADebugTag", "OAuth:: " + RequestContext.getRequestContext().getOAuth());
 
-                                    up.upload("emulator", bitmapdata, uploadMetaData);
+                                    up.upload("A photo taken using the Building Scavenger", bitmapdata, uploadMetaData);
                                     progress.dismiss();
 
                                     startSearch();

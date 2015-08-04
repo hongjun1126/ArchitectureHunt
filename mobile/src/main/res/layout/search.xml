@@ -137,40 +137,104 @@
 
     <FrameLayout android:id="@+id/overlay_fragment_container"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent">
+        android:layout_height="fill_parent"
+        android:visibility="invisible">
 
-        <Button
-            android:id="@+id/compassButton"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:text="Compass"
-            android:layout_gravity="left|center_vertical"
-            android:layout_marginTop="108dp"
-            android:layout_marginLeft="130dp"
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:id="@+id/frag_lin_container"
+            android:layout_gravity="center"
+            android:gravity="center_horizontal"
+            android:background="#de0b0b0b">
 
-            android:visibility="gone"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="Large Text"
+                android:id="@+id/frag_name"
+                android:textColor="#ffffff"
+                android:layout_marginTop="30dp"
+                android:layout_gravity="right"
+                android:textStyle="bold"
+                android:layout_marginRight="10dp" />
 
-        <Button
-            android:id="@+id/GPSbutton"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:text="GPS"
-            android:layout_gravity="left|center_vertical"
-            android:layout_marginTop="108dp"
-            android:layout_marginLeft="220dp"
+            <ImageView
+                android:layout_width="wrap_content"
+                android:id="@+id/frag_img"
+                android:focusableInTouchMode="false"
+                android:visibility="visible"
+                android:layout_marginBottom="30dp"
+                android:layout_weight="1"
+                android:layout_height="0dp" />
 
-            android:visibility="gone"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="How would you like to navigate there?"
+                android:id="@+id/textView4"
+                android:textStyle="italic"
+                android:layout_marginBottom="10dp"
+                android:textColor="#ffffff" />
 
-        <Button
-            android:id="@+id/backButton"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:text="Back"
-            android:icon="@drawable/leftarrow"
-            android:layout_gravity="left|center_vertical"
-            android:layout_marginTop="108dp"
-            android:layout_marginLeft="40dp"
-            android:visibility="gone"/>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <Button
+                    android:id="@+id/compassButton"
+                    android:layout_height="wrap_content"
+                    android:layout_width="fill_parent"
+                    android:text="Freedom Mode"
+
+                    android:visibility="visible"
+                    android:background="#d1e1ff" />
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="40dp"
+                    android:id="@+id/imageView"
+                    android:src="@drawable/android_watch"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginLeft="10dp"
+                    android:layout_centerVertical="true"
+                    android:alpha="0.5" />
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <Button
+                    android:id="@+id/GPSbutton"
+                    android:layout_height="wrap_content"
+                    android:layout_width="fill_parent"
+                    android:text="Open Google Maps"
+
+                    android:visibility="visible"
+                    android:background="#dfffda" />
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:id="@+id/imageView2"
+                    android:src="@drawable/mobile"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:alpha="0.5" />
+            </RelativeLayout>
+
+            <Button
+                android:id="@+id/backButton"
+                android:layout_height="wrap_content"
+                android:layout_width="fill_parent"
+                android:text="Back"
+                android:icon="@drawable/leftarrow"
+                android:visibility="visible"
+                android:background="#e6e6e6" />
+
+        </LinearLayout>
 
 
     </FrameLayout>
