@@ -49,10 +49,12 @@ public class sendMessage extends Service {
                                 for (Node node : nodes) {
                                     Wearable.MessageApi.sendMessage(messageAPIclient, node.getId(), RECEIVER_SERVICE_PATH + "/pic",
                                             start_intent.getByteArrayExtra("pic"));
-                                    Wearable.MessageApi.sendMessage(messageAPIclient, node.getId(), RECEIVER_SERVICE_PATH + "/photoId",
-                                            start_intent.getByteArrayExtra("photoId"));
+
                                     Wearable.MessageApi.sendMessage(messageAPIclient, node.getId(), RECEIVER_SERVICE_PATH + "/loc",
                                             start_intent.getByteArrayExtra("loc"));
+                                    Wearable.MessageApi.sendMessage(messageAPIclient, node.getId(), RECEIVER_SERVICE_PATH + "/photoId",
+                                            start_intent.getByteArrayExtra("photoId"));
+
                                 }
                             }
                         }).start();

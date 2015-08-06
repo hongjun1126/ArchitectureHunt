@@ -30,6 +30,7 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -71,8 +72,8 @@ public class locationActivity extends Activity implements
     protected static final String restURL = "https://api.flickr.com/services/rest/";
     protected static final String searchMethod = "flickr.photos.search";
     protected static final int numberOfThreads = 20;
-    protected static final String CAPABILITY_NAME = "compass";
-    protected static final String RECEIVER_SERVICE_PATH = "/compass";
+    protected static final int defaultPage = 1;
+
 
     Location mCurrentLocation;
     LocationRequest mLocationRequest;
@@ -87,6 +88,7 @@ public class locationActivity extends Activity implements
     private Flickr_login flickr;
     private ListView lv;
     protected static List<RowItem> rowItems;
+    protected static List<RowItem> rowItemList;
     protected static NodeList nodeList;
     protected static ProgressDialog progress;
     protected static long threadId;
@@ -108,6 +110,9 @@ public class locationActivity extends Activity implements
     private boolean navigating = false;
     private Location nav_loc;
     private Button stop_nav;
+    private CustomList adapter;
+    protected int currentPage;
+
 
 
     @Override
@@ -119,6 +124,7 @@ public class locationActivity extends Activity implements
 
 
         flickr = new Flickr_login();
+        //rowItemList = new ArrayList<RowItem>();
         compassButton = (Button)findViewById(R.id.compassButton);
         GPSbutton = (Button)findViewById(R.id.GPSbutton);
         backButton = (Button)findViewById(R.id.backButton);
@@ -133,7 +139,7 @@ public class locationActivity extends Activity implements
             public void onClick(View v) {
                 navigating = false;
                 item.navigating = false;
-                showList(getSort());
+                //showList(getSort());
                 stop_nav.setVisibility(View.INVISIBLE);
                 curr_nav_container.setVisibility(View.INVISIBLE);
                 sendMessageToWear_fin();
@@ -144,13 +150,19 @@ public class locationActivity extends Activity implements
         createLocationRequest();
         this.mGoogleApiClient.connect();
 
+
+        /*
         progress = new ProgressDialog(this);
         progress.setMessage("Loading...");
         progress.setIndeterminate(true);
         progress.setCancelable(false);
         progress.show();
+        */
+
 
     }
+
+
 
     public void spinnerHelper(){
 
@@ -186,7 +198,18 @@ public class locationActivity extends Activity implements
                 String radiusNum = radius_selected.substring(0, 1);
                 setRadius(radiusNum);
 
-                searchPhotos(getRadius(), getSort(), getLat(), getLon());
+
+                rowItemList = new ArrayList<RowItem>();
+                currentPage = 0;
+                boolean doneSearch = searchPhotos(getRadius(), getSort(), getLat(), getLon(), defaultPage);
+                //System.out.println("in radius spinnerha: " + Thread.currentThread().getName());
+                //progress.dismiss();
+                if (doneSearch) {
+                    updateItemList();
+                    sortingItems(getSort());
+                    showList();
+                    loadExtraData();
+                }
                 //Log.d("ADebugTag", "in radius spinner: " + Thread.currentThread().getName());
 
             }
@@ -214,7 +237,9 @@ public class locationActivity extends Activity implements
                     firstTime = false;
 
                 } else {
-                    searchPhotos(getRadius(), getSort(), getLat(), getLon());
+                    sortingItems(getSort());
+                    showList();
+                    //searchPhotos(getRadius(), getSort(), getLat(), getLon(), defaultPage);
                 }
             }
 
@@ -280,9 +305,25 @@ public class locationActivity extends Activity implements
             Log.e("LOCATION CHANGED", Float.toString(location.distanceTo(prev_location)));
 
             Log.e("LOCATION CHANGED", ">>>>>>>>>>>>>>CALLING SEARCH PHOTOS");
-            progress.show();
+
+            //progress.show();
             set_new_curr_location(location);
-            searchPhotos(getRadius(), getSort(), getLat(), getLon());
+            rowItemList = new ArrayList<RowItem>();
+            currentPage = 0;
+            boolean doneSearch = searchPhotos(getRadius(), getSort(), getLat(), getLon(), defaultPage);
+            //progress.dismiss();
+
+            if (doneSearch) {
+                updateItemList();
+                sortingItems(getSort());
+                showList();
+                loadExtraData();
+            }
+
+
+           // progress.show();
+           // set_new_curr_location(location);
+           // searchPhotos(getRadius(), getSort(), getLat(), getLon(), defaultPage);
         }
     }
 
@@ -293,14 +334,16 @@ public class locationActivity extends Activity implements
 
     }
 
-    public void searchPhotos(final String radius, String sorting, final String lat, final String lon){
-        progress.show();
+    private boolean searchPhotos(final String radius, String sorting, final String lat, final String lon, final int page){
+        //progress.show();
         rowItems = new ArrayList<RowItem>();
         threadList = new ArrayList<Thread>();
 
         Thread t = new Thread(new Runnable() {
+
             @Override
             public void run() {
+
 
                 Log.d("ADebugTag", "Value: " + "in t thread");
 
@@ -324,6 +367,8 @@ public class locationActivity extends Activity implements
                 searchBuffer.append(lon);
                 searchBuffer.append("&media=photo&per_page=");
                 searchBuffer.append(perPage);
+                searchBuffer.append("&page=");
+                searchBuffer.append(page);
 //                searchBuffer.append("&sort=interestingness-desc");
                 String searchURL = searchBuffer.toString();
 
@@ -352,6 +397,7 @@ public class locationActivity extends Activity implements
                                 threadList.add(t);
                             }
 
+
                             for (int i = 0; i < threadList.size(); i++){
                                 try {
                                     threadList.get(i).join();
@@ -360,18 +406,10 @@ public class locationActivity extends Activity implements
                                 }
                             }
 
-                            progress.dismiss();
 
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    showList(getSort());
+                            //progress.dismiss();
 
-
-                                }
-                            });
-
-
+                            //System.out.println("t theadId cool: " + Thread.currentThread().getId());
                         } catch (SAXException e) {
                             e.printStackTrace();
                         } catch (IOException e) {
@@ -391,31 +429,68 @@ public class locationActivity extends Activity implements
         });
         t.start();
 
+        try {
+            t.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        return true;
+
     }
 
-    private CustomList adapter;
-    public void showList(String sorting){
+    public void updateItemList(){
+
+        for (int i = 0; i < rowItems.size(); i++) {
+            rowItemList.add(rowItems.get(i));
+        }
+    }
 
 
-        Log.d("ADebugTag", "title: " + "in showList");
+    public void sortingItems(String sorting) {
+
+
+        Log.d("ADebugTag", "title: " + "in sortingItems");
 
         //Log.d("ADebugTag", "showList: " + Thread.currentThread().getName());
 
-        if (sorting == null || sorting.equals("Distance")){
+        if (sorting == null || sorting.equals("Distance")) {
             sortByDistance();
-        }else{
+        } else {
             sortByFavorite();
         }
+    }
+
+    public void showList() {
+
 
         lv = (ListView) findViewById(R.id.list);
 
         adapter = new CustomList(this,
-                R.layout.listitem, rowItems);
+                R.layout.listitem, rowItemList);
 
         lv.setAdapter(adapter);
 
+    }
+
+    public void loadExtraData(){
+
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                searchPhotos(getRadius(), getSort(), getLat(), getLon(), currentPage + 1);
+            }
+        }).start();
+
+
         lv.setOnItemClickListener(this);
         lv.setOnScrollListener(new AbsListView.OnScrollListener() {
+
+            private int visibleThreshold = 1;
+            private int previousTotal = 0;
+            private boolean loading = true;
+
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
                 if (curr_nav_container.getVisibility() == View.VISIBLE) {
@@ -436,11 +511,42 @@ public class locationActivity extends Activity implements
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
 
+
+                if (loading) {
+                    if (totalItemCount > previousTotal) {
+                        loading = false;
+                        previousTotal = totalItemCount;
+                        currentPage++;
+
+                    }
+                }
+                if (!loading && (totalItemCount - visibleItemCount) <= (firstVisibleItem + visibleThreshold)) {
+                    // I load the next page of gigs using a background task,
+                    // but you can call any function here.
+
+
+                    //callSearchPhotos(getRadius(), getSort(), getLat(), getLon(), currentPage + 1);
+                    updateItemList();
+                    sortingItems(getSort());
+                    showList();
+                    loadExtraData();
+                    showToast();
+
+                    Log.d("ADebugTag", "currentPage: " + currentPage);
+
+                    loading = true;
+                }
+
+
             }
         });
 
-        ButtonsOnFragment();
+        //ButtonsOnFragment();
 
+    }
+
+    public void showToast(){
+        Toast.makeText(this, "Loaded 10 new pictures!", Toast.LENGTH_SHORT).show();
     }
 
     public void ButtonsOnFragment(){
@@ -450,7 +556,7 @@ public class locationActivity extends Activity implements
                 // Perform action on click
                 Log.d("ADebugTag", "test: " + "GPS is clicked");
                 backButton.performClick();
-                Uri gmmIntentUri = Uri.parse("google.navigation:q="+item.getLoc()[0]+", "+item.getLoc()[1]+"&mode=w");
+                Uri gmmIntentUri = Uri.parse("google.navigation:q=" + item.getLoc()[0] + ", " + item.getLoc()[1] + "&mode=w");
                 Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
                 mapIntent.setPackage("com.google.android.apps.maps");
                 startActivity(mapIntent);
@@ -467,7 +573,7 @@ public class locationActivity extends Activity implements
                 nav_loc.setLongitude(item.getLoc()[1]);
                 sendMessageToWear();
                 get_dist_rot(mCurrentLocation, nav_loc);
-                for (RowItem r_item : rowItems) {
+                for (RowItem r_item : rowItemList) {
                     if (r_item.navigating) {
                         r_item.navigating = false;
                     }
@@ -499,7 +605,7 @@ public class locationActivity extends Activity implements
                 curr_nav_container.startAnimation(anim);
                 curr_nav_container.setVisibility(View.VISIBLE);
                 stop_nav.setVisibility(View.VISIBLE);
-                showList(getSort());
+                //showList(getSort());
                 backButton.performClick();
 
 
@@ -567,7 +673,7 @@ public class locationActivity extends Activity implements
 
     public void sortByDistance(){
 
-        Collections.sort(rowItems, new Comparator<RowItem>() {
+        Collections.sort(rowItemList, new Comparator<RowItem>() {
             @Override
             public int compare(RowItem p1, RowItem p2) {
                 return Float.compare(p1.getDist(), p2.getDist()); // Ascending
@@ -578,22 +684,24 @@ public class locationActivity extends Activity implements
     }
 
     public void sortByFavorite(){
-        Collections.sort(rowItems, new Comparator<RowItem>() {
+        Collections.sort(rowItemList, new Comparator<RowItem>() {
             @Override
             public int compare(RowItem p1, RowItem p2) {
                 return Integer.compare(p1.getFavoriteNum(), p2.getFavoriteNum()); // Ascending
             }
 
         });
-        Collections.reverse(rowItems);
+        Collections.reverse(rowItemList);
 
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
+        ButtonsOnFragment();
+
         Log.d("ADebugTag", "showList: " + "im in on click");
-        item = rowItems.get(position);
+        item = rowItemList.get(position);
 
         newFragment = new MyFragment();
         ft = getFragmentManager().beginTransaction();
@@ -638,6 +746,10 @@ public class locationActivity extends Activity implements
         this.sort = sort;
     }
 
+    public void callSearchPhotos(String radius, String sorting, String lat, String lon, int page){
+        searchPhotos(radius, sorting, lat, lon, page);
+    }
+
     @Override
     public void onConnectionSuspended(int i) {
         mGoogleApiClient.connect();
@@ -649,7 +761,6 @@ public class locationActivity extends Activity implements
         mGoogleApiClient.connect();
 
     }
-
 
     public void onStatusChanged(String provider, int status, Bundle extras) {
 
@@ -691,4 +802,5 @@ public class locationActivity extends Activity implements
         sendMessageToWear_fin();
         mGoogleApiClient.disconnect();
     }
+
 }

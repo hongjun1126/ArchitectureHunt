@@ -96,10 +96,9 @@ public class MainActivity extends Activity implements SensorEventListener {
                 mMessageReceiver, new IntentFilter("new_dist_rot"));
 
 
-
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        //notification();
+        notification();
 
 
     }
