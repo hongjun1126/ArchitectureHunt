@@ -355,7 +355,7 @@ public class locationActivity extends Activity implements
                 System.out.println("t theadId: " + Thread.currentThread().getId());
                 //threadId = Thread.currentThread().getId();
 
-                String perPage = "10";
+                String perPage = "15";
 
                 StringBuffer searchBuffer = new StringBuffer(restURL);
                 searchBuffer.append("?method=");

@@ -19,42 +19,37 @@
                     android:id="@+id/radiusText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:paddingLeft="100dp"
-                    android:paddingRight="10dp"
-                    android:layout_marginTop="20dp"
-                    android:textSize="16dp"/>
+                    android:layout_marginTop="10dp"
+                    android:layout_marginLeft="17dp"
+                    android:textSize="14dp"/>
 
                 <Spinner
                     android:id="@+id/radius_spinner"
-                    android:layout_width="95dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_toRightOf="@+id/radiusText"
                     android:textAlignment="center"
-                    android:gravity="center_horizontal"
-                    android:layout_marginTop="10dp"/>
+                    android:gravity="left"
+                    android:layout_marginLeft="10dp" />
 
                 <TextView
                     android:id="@+id/sortText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/radiusText"
-                    android:paddingLeft="100dp"
-                    android:paddingRight="10dp"
-                    android:layout_marginTop="10dp"
-                    android:textSize="16dp"
-                    android:layout_marginBottom="20dp"/>
+                    android:layout_marginLeft="17dp"
+                    android:textSize="14dp"
+                    android:layout_marginTop="10dp"/>
 
                 <Spinner
                     android:id="@+id/sorting_spinner"
-                    android:layout_width="95dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_toRightOf="@+id/sortText"
-                    android:layout_below="@+id/radius_spinner"
-
+                    android:layout_marginTop="30dp"
+                    android:layout_marginLeft="10dp"
                     android:textAlignment="center"
-                    android:gravity="center_horizontal"
-                    android:layout_marginBottom="20dp"
-
+                    android:gravity="left"
                     />
 
                 <Button
