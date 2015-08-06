@@ -30,6 +30,7 @@ public class MyThread extends Thread {
     protected static final String getInfoMethod = "flickr.photos.getInfo";
     protected static final String getFavMethod = "flickr.photos.getFavorites";
     protected static final String pictureWidth = "500";
+    protected static final String pictureHeight = "500";
 
     // using multi-threads to retrieve data from Flickr. Default number of threads I set here is 20
     public void run() {
@@ -196,14 +197,19 @@ public class MyThread extends Thread {
                     //Log.d("ADebugTag", "faverites: " + favDoc.getDocumentElement().getChildNodes().item(1).getAttributes().item(7).getNodeValue());
 
 
-                    Log.d("ADebugTag", "Value: " + photoSizeDoc.getDocumentElement().getChildNodes().item(1).getChildNodes().item(13).getAttributes().item(1).getNodeValue());
-                    Log.d("ADebugTag", "Value: " + photoSizeDoc.getDocumentElement().getChildNodes().item(1).getChildNodes().item(13).getAttributes().item(3).getNodeValue());
+                   // Log.d("ADebugTag", "Value: " + photoSizeDoc.getDocumentElement().getChildNodes().item(1).getChildNodes().item(11).getAttributes().item(2).getNodeValue());
+                   // Log.d("ADebugTag", "Value: " + photoSizeDoc.getDocumentElement().getChildNodes().item(1).getChildNodes().item(11).getAttributes().item(3).getNodeValue());
+
+                    Node titleNode = photoDoc.getDocumentElement().getChildNodes().item(1).getChildNodes().item(3).getChildNodes().item(0);
 
                     String picWidth = photoSizeDoc.getDocumentElement().getChildNodes().item(1).getChildNodes().item(11).getAttributes().item(1).getNodeValue();
-                    if (picWidth.equals(pictureWidth)){
+                    String picHeight = photoSizeDoc.getDocumentElement().getChildNodes().item(1).getChildNodes().item(11).getAttributes().item(2).getNodeValue();
+                    if (picWidth.equals(pictureWidth) && !(picHeight.equals(pictureHeight)) && titleNode != null){
 
                         String picURL = photoSizeDoc.getDocumentElement().getChildNodes().item(1).getChildNodes().item(11).getAttributes().item(3).getNodeValue();
                         Bitmap bmp = getBitMap(picURL);
+
+                        title = titleNode.getNodeValue();
 
                         Node locationNode = photoDoc.getDocumentElement().getChildNodes().item(1).getChildNodes().item(25);
                         float lat2 = Float.parseFloat(locationNode.getAttributes().item(0).getNodeValue());
@@ -213,13 +219,6 @@ public class MyThread extends Thread {
                         distance = distFrom(lat1, lng1, lat2, lng2);
                         float loc[] = new float[]{lat2, lng2};
 
-
-                        Node titleNode = photoDoc.getDocumentElement().getChildNodes().item(1).getChildNodes().item(3).getChildNodes().item(0);
-                        if (titleNode != null) {
-                            title = titleNode.getNodeValue();
-                        } else {
-                            title = "";
-                        }
 
                         int favNum = Integer.parseInt(favDoc.getDocumentElement().getChildNodes().item(1).getAttributes().item(7).getNodeValue());
 
