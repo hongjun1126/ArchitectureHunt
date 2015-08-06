@@ -27,6 +27,7 @@ public class postUpload extends Activity {
     public void startNewActivity(){
 
         Intent searchIntent = new Intent(this, locationActivity.class);
+        searchIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(searchIntent);
 
     }

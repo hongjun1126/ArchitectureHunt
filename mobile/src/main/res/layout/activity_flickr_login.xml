@@ -17,19 +17,15 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="The Building Scavenger"
-        android:id="@+id/textView"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="46dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="An app for photography and architecture enthusiasts"
+        android:text="Ready to explore the amazing architecture around you?"
         android:id="@+id/textView2"
-        android:layout_below="@+id/textView"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:gravity="center_horizontal"
+        android:layout_above="@+id/launch_login"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:textStyle="italic" />
 
 </RelativeLayout>

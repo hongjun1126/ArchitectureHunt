@@ -118,7 +118,7 @@ public class MainActivity extends Activity implements SensorEventListener {
                 Log.d("DestROT", Float.toString(dest_rot));
                 TextView dist = (TextView) findViewById(R.id.dist);
                 dist.setText(Integer.toString(Math.round(dest_dist)) + "m");
-                if (dest_dist < 20) {
+                if (dest_dist < 30) {
                     atDestination();
                 }
             }
