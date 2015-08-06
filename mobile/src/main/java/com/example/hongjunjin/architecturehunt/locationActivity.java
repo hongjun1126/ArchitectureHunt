@@ -641,7 +641,7 @@ public class locationActivity extends Activity implements
 
     public void sendMessageToWear(){
 
-        Log.d("ADebugTag", "test: " + "in Message Servce");
+        //Log.d("ADebugTag", "test: " + "in Message Servce");
 
         Intent sendMsgIntent = new Intent(this, sendMessage.class);
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
@@ -661,7 +661,7 @@ public class locationActivity extends Activity implements
 
     public void sendMessageToWear2(float distance, float compass_rotation){
 
-        Log.d("ADebugTag", "test: " + "in Message Servce 2");
+        //Log.d("ADebugTag", "test: " + "in Message Servce 2");
 
         Intent sendMsgIntent = new Intent(this, sendMessage2.class);
         sendMsgIntent.putExtra("distance", distance);
@@ -806,6 +806,8 @@ public class locationActivity extends Activity implements
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
+        Log.d("ADebugTag", "test: " + "in Destroy in locationActivity");
         if (mGoogleApiClient.isConnected() && mRequestingLocationUpdates) {
             stopLocationUpdates();
         }

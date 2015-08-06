@@ -70,14 +70,16 @@ public class MainActivity extends Activity implements SensorEventListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.round_activity_main);
+
+        Log.d("ADebugTag", "onCreate photoId: " + "in mainActivity");
         mSensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         mMagnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
         mPointer = (ImageView) findViewById(R.id.pointer);
-        Intent intent = getIntent();
-        pic = intent.getParcelableExtra("pic");
-        loc = intent.getFloatArrayExtra("loc");
-        photoId = intent.getStringExtra("photoId");
+
+        pic = messengerService.bm;
+        loc = messengerService.float_loc;
+        photoId = messengerService.pictureId;
 
         Log.d("ADebugTag", "onCreate photoId: " + photoId);
 

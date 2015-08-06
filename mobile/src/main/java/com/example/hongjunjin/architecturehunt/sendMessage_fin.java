@@ -47,7 +47,7 @@ public class sendMessage_fin extends Service {
                                 for (Node node : nodes) {
                                         Wearable.MessageApi.sendMessage(messageAPIclient, node.getId(), RECEIVER_SERVICE_PATH + "/finish",
                                                 null);
-                                        Log.d("ADebugTag", "Finish Message sent");
+                                        Log.d("ADebugTag", "test: " + "finish sendMessage_fin");
                                 }
                             }
                         }).start();

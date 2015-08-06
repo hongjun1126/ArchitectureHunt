@@ -17,13 +17,11 @@ import android.widget.Toast;
  * Created by Gordon Lai on 8/1/2015.
  */
 public class LocalService extends Service {
-    @Override
-    public void onCreate() {
-        Log.d("LocalService", "Started");
-    }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.d("LocalService", "in LocalService!!!!!!");
+
         Log.d("LocalService", "Received start id " + startId + ": " + intent);
         if (intent.getBooleanExtra("finish", false)) {
             Log.d("ADebugTag", "received the finish message from messengerService");

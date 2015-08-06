@@ -55,6 +55,8 @@ public class sendMessage extends Service {
                                     Wearable.MessageApi.sendMessage(messageAPIclient, node.getId(), RECEIVER_SERVICE_PATH + "/photoId",
                                             start_intent.getByteArrayExtra("photoId"));
 
+                                    Log.d("ADebugTag", "test: " + "finish sendMessage");
+
                                 }
                             }
                         }).start();
