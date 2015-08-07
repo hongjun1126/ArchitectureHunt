@@ -27,6 +27,7 @@
             android:layout_marginTop="8dp"
             android:layout_marginRight="80dp"
             android:layout_width="fill_parent"
+            android:textColor="@color/Black"
             android:layout_height="wrap_content"
 
             android:textSize="14dp" />
@@ -41,6 +42,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
                 android:layout_marginBottom="10dp"
+                android:textColor="@color/Gray"
                 android:textSize="12dp" />
 
             <TextView
@@ -50,6 +52,7 @@
                 android:layout_alignParentBottom="true"
                 android:layout_marginLeft="230dp"
                 android:layout_marginBottom="10dp"
+                android:textColor="@color/Gray"
                 android:textSize="12dp" />
 
             <ImageView
