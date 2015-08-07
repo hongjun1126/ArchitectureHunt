@@ -164,7 +164,6 @@ public class locationActivity extends Activity implements
         progress.show();
         */
 
-
     }
 
 

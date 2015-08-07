@@ -25,7 +25,7 @@
 
                 <Spinner
                     android:id="@+id/radius_spinner"
-                    android:layout_width="wrap_content"
+                    android:layout_width="220dp"
                     android:layout_height="wrap_content"
                     android:layout_toRightOf="@+id/radiusText"
                     android:textAlignment="center"
@@ -39,29 +39,32 @@
                     android:layout_below="@+id/radiusText"
                     android:layout_marginLeft="17dp"
                     android:textSize="14dp"
+                    android:layout_marginBottom="8dp"
                     android:layout_marginTop="10dp"/>
 
                 <Spinner
                     android:id="@+id/sorting_spinner"
-                    android:layout_width="wrap_content"
+                    android:layout_width="220dp"
                     android:layout_height="wrap_content"
                     android:layout_toRightOf="@+id/sortText"
                     android:layout_marginTop="30dp"
                     android:layout_marginLeft="10dp"
                     android:textAlignment="center"
+                    android:layout_marginBottom="8dp"
                     android:gravity="left"
                     />
 
                 <Button
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="72dp"
                     android:text="STOP NAV"
+                    android:textSize="12dp"
                     android:id="@+id/stop_nav"
                     android:layout_alignParentRight="true"
-                    android:layout_margin="5dp"
+                    android:layout_marginLeft="10dp"
                     android:layout_alignParentEnd="false"
                     android:layout_centerVertical="true"
-                    android:background="@color/OrangeRed"
+                    android:background="#d1e1ff"
                     android:visibility="invisible" />
             </RelativeLayout>
 
@@ -148,12 +151,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="Large Text"
+                android:textSize="18dp"
                 android:id="@+id/frag_name"
                 android:textColor="#ffffff"
                 android:layout_marginTop="30dp"
+                android:layout_marginBottom="10dp"
                 android:layout_gravity="right"
-                android:textStyle="bold"
+                android:typeface="sans"
+                android:layout_marginLeft="25dp"
                 android:layout_marginRight="10dp" />
 
             <ImageView
