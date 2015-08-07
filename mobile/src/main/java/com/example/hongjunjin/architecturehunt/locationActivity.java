@@ -15,6 +15,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.AnimationSet;
 import android.view.animation.TranslateAnimation;
@@ -102,6 +103,8 @@ public class locationActivity extends Activity implements
     protected static TextView frag_name;
 
     protected static LinearLayout ll;
+    protected static RelativeLayout rl;
+
     protected static Button backButton;
     protected TextView nav_title;
     protected ImageView nav_img;
@@ -134,6 +137,7 @@ public class locationActivity extends Activity implements
         frag_img = (ImageView)findViewById(R.id.frag_img);
         frag_name = (TextView) findViewById(R.id.frag_name);
         ll = (LinearLayout)findViewById(R.id.linearLayer);
+        rl = (RelativeLayout)findViewById(R.id.relativeLayer);
         flayout = (FrameLayout)findViewById(R.id.overlay_fragment_container);
         nav_img = (ImageView) findViewById(R.id.nav_img);
         nav_title = (TextView) findViewById(R.id.nav_title);
@@ -354,7 +358,7 @@ public class locationActivity extends Activity implements
                 System.out.println("t theadId: " + Thread.currentThread().getId());
                 //threadId = Thread.currentThread().getId();
 
-                String perPage = "15";
+                String perPage = "10";
 
                 StringBuffer searchBuffer = new StringBuffer(restURL);
                 searchBuffer.append("?method=");
@@ -626,6 +630,12 @@ public class locationActivity extends Activity implements
                     View child = ll.getChildAt(i);
                     child.setEnabled(true);
                 }
+
+                for (int i = 0; i < rl.getChildCount(); i++) {
+                    View child = rl.getChildAt(i);
+                    child.setEnabled(true);
+                }
+
             }
         });
     }
@@ -713,6 +723,12 @@ public class locationActivity extends Activity implements
 
         for (int i = 0; i < ll.getChildCount(); i++) {
             View child = ll.getChildAt(i);
+            child.setEnabled(false);
+        }
+
+
+        for (int i = 0; i < rl.getChildCount(); i++) {
+            View child = rl.getChildAt(i);
             child.setEnabled(false);
         }
 
