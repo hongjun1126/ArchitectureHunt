@@ -2,6 +2,7 @@ package com.example.hongjunjin.architecturehunt;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.util.Log;
@@ -20,6 +21,7 @@ import java.util.List;
 public class CustomList extends ArrayAdapter<RowItem> {
 
     Context context;
+    protected static final int IMAGE_PIXEL = 30;
 
     public CustomList(Context context, int resourceId, List<RowItem> items) {
         super(context, resourceId, items);
@@ -71,7 +73,11 @@ public class CustomList extends ArrayAdapter<RowItem> {
             holder.txtTitle.setText(rowItem.getTitle());
             holder.txtTitle.setTypeface(Typeface.DEFAULT);
         }
-        holder.imageView.setImageBitmap(rowItem.getBmp());
+
+        Bitmap bmpSquare = ImageHelper.cropToSquare(rowItem.getBmp());
+        Bitmap squareRoundBmp = ImageHelper.getRoundedCornerBitmap(bmpSquare, IMAGE_PIXEL);
+
+        holder.imageView.setImageBitmap(squareRoundBmp);
         holder.txtDist.setText(rowItem.getDistInString());
         holder.favNumber.setText(rowItem.getFavInString());
         holder.imageStar.setImageResource(R.drawable.flickrccc);

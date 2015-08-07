@@ -31,6 +31,7 @@ public class MyThread extends Thread {
     protected static final String getFavMethod = "flickr.photos.getFavorites";
     protected static final String pictureWidth = "500";
     protected static final String pictureHeight = "500";
+    protected static final int IMAGE_PIXEL = 50;
 
     // using multi-threads to retrieve data from Flickr. Default number of threads I set here is 20
     public void run() {
@@ -197,7 +198,7 @@ public class MyThread extends Thread {
                     //Log.d("ADebugTag", "faverites: " + favDoc.getDocumentElement().getChildNodes().item(1).getAttributes().item(7).getNodeValue());
 
 
-                   // Log.d("ADebugTag", "Value: " + photoSizeDoc.getDocumentElement().getChildNodes().item(1).getChildNodes().item(11).getAttributes().item(2).getNodeValue());
+                    //Log.d("ADebugTag", "Value: " + photoSizeDoc.getDocumentElement().getChildNodes().item(1).getChildNodes().item(11).getAttributes().item(2).getNodeValue());
                    // Log.d("ADebugTag", "Value: " + photoSizeDoc.getDocumentElement().getChildNodes().item(1).getChildNodes().item(11).getAttributes().item(3).getNodeValue());
 
                     Node titleNode = photoDoc.getDocumentElement().getChildNodes().item(1).getChildNodes().item(3).getChildNodes().item(0);
@@ -208,6 +209,7 @@ public class MyThread extends Thread {
 
                         String picURL = photoSizeDoc.getDocumentElement().getChildNodes().item(1).getChildNodes().item(11).getAttributes().item(3).getNodeValue();
                         Bitmap bmp = getBitMap(picURL);
+
 
                         title = titleNode.getNodeValue();
 
