@@ -4,27 +4,22 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.hardware.GeomagneticField;
 import android.location.Location;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.animation.AnimationSet;
 import android.view.animation.TranslateAnimation;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -37,20 +32,15 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.wearable.CapabilityApi;
-import com.google.android.gms.wearable.Wearable;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.w3c.dom.Text;
 import org.xml.sax.SAXException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -58,8 +48,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -91,10 +79,8 @@ public class locationActivity extends Activity implements
     protected static List<RowItem> rowItems;
     protected static List<RowItem> rowItemList;
     protected static NodeList nodeList;
-    protected static ProgressDialog progress;
     protected static long threadId;
     private List<Thread> threadList;
-    private static final int CONTENT_VIEW_ID = 10101010;
     protected static RowItem item;
     protected static FrameLayout flayout;
     protected static Button compassButton;
@@ -113,15 +99,14 @@ public class locationActivity extends Activity implements
 
     protected static Fragment newFragment;
     protected static FragmentTransaction ft;
-    private SharedPreferences sharedPref;
     private boolean navigating = false;
     private Location nav_loc;
     private Button stop_nav;
     private CustomList adapter;
     protected int currentPage;
     protected ListView lsView;
-
-
+    private Handler handler;
+    private ProgressDialog progressDialog;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -132,7 +117,7 @@ public class locationActivity extends Activity implements
 
 
         flickr = new Flickr_login();
-        //rowItemList = new ArrayList<RowItem>();
+
         compassButton = (Button)findViewById(R.id.compassButton);
         GPSbutton = (Button)findViewById(R.id.GPSbutton);
         backButton = (Button)findViewById(R.id.backButton);
@@ -164,13 +149,11 @@ public class locationActivity extends Activity implements
         this.mGoogleApiClient.connect();
 
 
-        /*
-        progress = new ProgressDialog(this);
-        progress.setMessage("Loading...");
-        progress.setIndeterminate(true);
-        progress.setCancelable(false);
-        progress.show();
-        */
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Loading...");
+        progressDialog.setIndeterminate(true);
+        progressDialog.setCancelable(false);
+
 
     }
 
@@ -210,19 +193,26 @@ public class locationActivity extends Activity implements
                 String radiusNum = radius_selected.substring(0, 1);
                 setRadius(radiusNum);
 
+                System.out.println("in radius spinnerha: " + Thread.currentThread().getName());
+                progressDialog.show();
 
                 rowItemList = new ArrayList<RowItem>();
                 currentPage = 0;
-                boolean doneSearch = searchPhotos(getRadius(), getSort(), getLat(), getLon(), defaultPage);
-                //System.out.println("in radius spinnerha: " + Thread.currentThread().getName());
-                //progress.dismiss();
-                if (doneSearch) {
-                    updateItemList();
-                    sortingItems(getSort());
-                    showList();
-                    loadExtraData();
-                }
-                //Log.d("ADebugTag", "in radius spinner: " + Thread.currentThread().getName());
+                searchPhotos(getRadius(), getSort(), getLat(), getLon(), defaultPage, "radius");
+
+                handler = new Handler(){
+                    @Override
+                    public void handleMessage(Message message){
+
+                        if (message.obj.equals("radius") || message.obj.equals("onLocationChange")){
+                            updateItemList();
+                            sortingItems(getSort());
+                            showList();
+                            loadExtraData();
+                        }
+
+                    }
+                };
 
             }
 
@@ -318,24 +308,12 @@ public class locationActivity extends Activity implements
 
             Log.e("LOCATION CHANGED", ">>>>>>>>>>>>>>CALLING SEARCH PHOTOS");
 
-            //progress.show();
+            progressDialog.show();
             set_new_curr_location(location);
             rowItemList = new ArrayList<RowItem>();
             currentPage = 0;
-            boolean doneSearch = searchPhotos(getRadius(), getSort(), getLat(), getLon(), defaultPage);
-            //progress.dismiss();
+            searchPhotos(getRadius(), getSort(), getLat(), getLon(), defaultPage, "onLocationChange");
 
-            if (doneSearch) {
-                updateItemList();
-                sortingItems(getSort());
-                showList();
-                loadExtraData();
-            }
-
-
-           // progress.show();
-           // set_new_curr_location(location);
-           // searchPhotos(getRadius(), getSort(), getLat(), getLon(), defaultPage);
         }
     }
 
@@ -346,8 +324,8 @@ public class locationActivity extends Activity implements
 
     }
 
-    private boolean searchPhotos(final String radius, String sorting, final String lat, final String lon, final int page){
-        //progress.show();
+    private void searchPhotos(final String radius, String sorting, final String lat, final String lon, final int page, final String sender){
+
         rowItems = new ArrayList<RowItem>();
         threadList = new ArrayList<Thread>();
 
@@ -355,7 +333,6 @@ public class locationActivity extends Activity implements
 
             @Override
             public void run() {
-
 
                 Log.d("ADebugTag", "Value: " + "in t thread");
 
@@ -418,10 +395,13 @@ public class locationActivity extends Activity implements
                                 }
                             }
 
+                            progressDialog.dismiss();
 
-                            //progress.dismiss();
+                            Message message = Message.obtain();
+                            message.obj = sender;
+                            handler.sendMessage(message);
 
-                            //System.out.println("t theadId cool: " + Thread.currentThread().getId());
+
                         } catch (SAXException e) {
                             e.printStackTrace();
                         } catch (IOException e) {
@@ -440,14 +420,6 @@ public class locationActivity extends Activity implements
 
         });
         t.start();
-
-        try {
-            t.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        return true;
 
     }
 
@@ -491,7 +463,7 @@ public class locationActivity extends Activity implements
         new Thread(new Runnable() {
             @Override
             public void run() {
-                searchPhotos(getRadius(), getSort(), getLat(), getLon(), currentPage + 1);
+                searchPhotos(getRadius(), getSort(), getLat(), getLon(), currentPage + 1, "loadPages");
             }
         }).start();
 
@@ -748,10 +720,6 @@ public class locationActivity extends Activity implements
 
     public void setSort(String sort){
         this.sort = sort;
-    }
-
-    public void callSearchPhotos(String radius, String sorting, String lat, String lon, int page){
-        searchPhotos(radius, sorting, lat, lon, page);
     }
 
     @Override

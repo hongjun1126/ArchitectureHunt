@@ -35,8 +35,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
-
+import java.util.Calendar;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MainActivity extends Activity implements SensorEventListener {
 
@@ -81,9 +83,23 @@ public class MainActivity extends Activity implements SensorEventListener {
         loc = messengerService.float_loc;
         photoId = messengerService.pictureId;
 
-        Log.d("ADebugTag", "onCreate photoId: " + photoId);
+        /*
 
+        int delay = 5000; // delay for 5 sec.
+        int period = 1000; // repeat every sec.
 
+        Timer timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            public void run() {
+                //your code
+                String myTime = java.text.DateFormat.getTimeInstance().format(Calendar.getInstance().getTime());
+                TextView time = (TextView) findViewById(R.id.timeText);
+                time.setText(myTime);
+            }
+        }, delay, period);
+        timer.purge();
+
+        */
 
         if (pic != null && loc != null) {
             bg_pic = (ImageView) findViewById(R.id.pic);
