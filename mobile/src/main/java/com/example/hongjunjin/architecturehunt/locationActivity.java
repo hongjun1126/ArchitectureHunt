@@ -103,6 +103,7 @@ public class locationActivity extends Activity implements
     protected static TextView frag_name;
 
     protected static LinearLayout ll;
+    protected static LinearLayout llItem;
     protected static RelativeLayout rl;
 
     protected static Button backButton;
@@ -118,6 +119,7 @@ public class locationActivity extends Activity implements
     private Button stop_nav;
     private CustomList adapter;
     protected int currentPage;
+    protected ListView lsView;
 
 
 
@@ -138,6 +140,8 @@ public class locationActivity extends Activity implements
         frag_name = (TextView) findViewById(R.id.frag_name);
         ll = (LinearLayout)findViewById(R.id.linearLayer);
         rl = (RelativeLayout)findViewById(R.id.relativeLayer);
+        llItem = (LinearLayout)findViewById(R.id.item_background);
+        lsView = (ListView) findViewById(R.id.list);
         flayout = (FrameLayout)findViewById(R.id.overlay_fragment_container);
         nav_img = (ImageView) findViewById(R.id.nav_img);
         nav_title = (TextView) findViewById(R.id.nav_title);
@@ -626,15 +630,6 @@ public class locationActivity extends Activity implements
                 Log.d("ADebugTag", "test: " + "Back is clicked");
                 flayout.setVisibility(View.INVISIBLE);
                 ll.setAlpha(1.0f);
-                for (int i = 0; i < ll.getChildCount(); i++) {
-                    View child = ll.getChildAt(i);
-                    child.setEnabled(true);
-                }
-
-                for (int i = 0; i < rl.getChildCount(); i++) {
-                    View child = rl.getChildAt(i);
-                    child.setEnabled(true);
-                }
 
             }
         });
@@ -720,17 +715,6 @@ public class locationActivity extends Activity implements
         newFragment = new MyFragment();
         ft = getFragmentManager().beginTransaction();
         ft.replace(R.id.overlay_fragment_container, newFragment).commit();
-
-        for (int i = 0; i < ll.getChildCount(); i++) {
-            View child = ll.getChildAt(i);
-            child.setEnabled(false);
-        }
-
-
-        for (int i = 0; i < rl.getChildCount(); i++) {
-            View child = rl.getChildAt(i);
-            child.setEnabled(false);
-        }
 
     }
 

@@ -137,6 +137,7 @@
     <FrameLayout android:id="@+id/overlay_fragment_container"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
+        android:clickable="true"
         android:visibility="invisible">
 
         <LinearLayout
