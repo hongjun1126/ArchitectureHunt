@@ -172,9 +172,33 @@
                 android:id="@+id/frag_img"
                 android:focusableInTouchMode="false"
                 android:visibility="visible"
-                android:layout_marginBottom="30dp"
+                android:layout_marginBottom="10dp"
                 android:layout_weight="1"
                 android:layout_height="0dp" />
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <Button
+                    android:id="@+id/frag_upButton"
+                    android:layout_width="70dp"
+                    android:layout_height="35dp"
+                    android:textSize="15dp"
+                    android:textColor="@color/White"
+                    android:text="UP" />
+
+
+                <Button
+                    android:id="@+id/frag_downButton"
+                    android:layout_width="70dp"
+                    android:layout_height="35dp"
+                    android:textSize="15dp"
+                    android:layout_toRightOf="@id/frag_upButton"
+                    android:textColor="@color/White"
+                    android:text="Down" />
+
+            </RelativeLayout>
 
             <TextView
                 android:layout_width="wrap_content"

@@ -122,7 +122,7 @@ public class MainActivity extends Activity implements SensorEventListener {
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        notification();
+        //notification();
 
 
     }

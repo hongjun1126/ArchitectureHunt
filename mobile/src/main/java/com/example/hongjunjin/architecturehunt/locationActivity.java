@@ -88,6 +88,8 @@ public class locationActivity extends Activity implements
     protected static Button GPSbutton;
     protected static ImageView frag_img;
     protected static TextView frag_name;
+    protected static Button frag_upButton;
+    protected static Button frag_downButton;
 
     protected static LinearLayout ll;
     protected static LinearLayout llItem;
@@ -110,6 +112,7 @@ public class locationActivity extends Activity implements
     private ProgressDialog progressDialog;
     private int index;
     private int top;
+    private int fragPosition;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -126,6 +129,8 @@ public class locationActivity extends Activity implements
         backButton = (Button)findViewById(R.id.backButton);
         frag_img = (ImageView)findViewById(R.id.frag_img);
         frag_name = (TextView) findViewById(R.id.frag_name);
+        frag_upButton = (Button) findViewById(R.id.frag_upButton);
+        frag_downButton = (Button) findViewById(R.id.frag_downButton);
         ll = (LinearLayout)findViewById(R.id.linearLayer);
         rl = (RelativeLayout)findViewById(R.id.relativeLayer);
         llItem = (LinearLayout)findViewById(R.id.item_background);
@@ -609,6 +614,41 @@ public class locationActivity extends Activity implements
 
             }
         });
+
+        frag_upButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                // Perform action on click
+
+                if (fragPosition > 0 ){
+                    showFragments(fragPosition - 1);
+                    fragPosition -= 1;
+                }
+
+
+            }
+        });
+
+        frag_downButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                // Perform action on click
+
+                if ((rowItemList.size() - fragPosition) <= 1){
+
+                    updateItemList();
+                    sortingItems(getSort());
+                    showList();
+                    loadExtraData();
+                    showToast();
+                    fragPosition = -1;
+                }
+
+                showFragments(fragPosition + 1);
+                fragPosition += 1;
+
+
+
+            }
+        });
     }
 
     public void get_dist_rot(Location curr, Location dest) {
@@ -685,13 +725,26 @@ public class locationActivity extends Activity implements
 
         ButtonsOnFragment();
 
-        Log.d("ADebugTag", "showList: " + "im in on click");
-        item = rowItemList.get(position);
+        fragPosition = position;
 
+        Log.d("ADebugTag", "showList: " + "im in on click");
+        //item = rowItemList.get(position);
+        showFragments(position);
+
+        /*
         newFragment = new MyFragment();
         ft = getFragmentManager().beginTransaction();
         ft.replace(R.id.overlay_fragment_container, newFragment).commit();
 
+        */
+    }
+
+    public void showFragments(int position){
+
+        item = rowItemList.get(position);
+        newFragment = new MyFragment();
+        ft = getFragmentManager().beginTransaction();
+        ft.replace(R.id.overlay_fragment_container, newFragment).commit();
 
     }
 
