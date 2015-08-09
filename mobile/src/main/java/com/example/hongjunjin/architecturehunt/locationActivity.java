@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.TranslateAnimation;
 import android.widget.AbsListView;
@@ -107,6 +108,8 @@ public class locationActivity extends Activity implements
     protected ListView lsView;
     private Handler handler;
     private ProgressDialog progressDialog;
+    private int index;
+    private int top;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -200,11 +203,11 @@ public class locationActivity extends Activity implements
                 currentPage = 0;
                 searchPhotos(getRadius(), getSort(), getLat(), getLon(), defaultPage, "radius");
 
-                handler = new Handler(){
+                handler = new Handler() {
                     @Override
-                    public void handleMessage(Message message){
+                    public void handleMessage(Message message) {
 
-                        if (message.obj.equals("radius") || message.obj.equals("onLocationChange")){
+                        if (message.obj.equals("radius") || message.obj.equals("onLocationChange")) {
                             updateItemList();
                             sortingItems(getSort());
                             showList();
@@ -510,6 +513,7 @@ public class locationActivity extends Activity implements
 
 
                     //callSearchPhotos(getRadius(), getSort(), getLat(), getLon(), currentPage + 1);
+
                     updateItemList();
                     sortingItems(getSort());
                     showList();
@@ -652,7 +656,7 @@ public class locationActivity extends Activity implements
     }
 
 
-    public void sortByDistance(){
+    public void sortByDistance() {
 
         Collections.sort(rowItemList, new Comparator<RowItem>() {
             @Override
@@ -687,6 +691,7 @@ public class locationActivity extends Activity implements
         newFragment = new MyFragment();
         ft = getFragmentManager().beginTransaction();
         ft.replace(R.id.overlay_fragment_container, newFragment).commit();
+
 
     }
 
