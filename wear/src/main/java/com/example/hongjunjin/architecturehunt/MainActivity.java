@@ -35,8 +35,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Locale;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -83,31 +89,31 @@ public class MainActivity extends Activity implements SensorEventListener {
         loc = messengerService.float_loc;
         photoId = messengerService.pictureId;
 
-        /*
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 
-        int delay = 5000; // delay for 5 sec.
-        int period = 1000; // repeat every sec.
-
-        Timer timer = new Timer();
-        timer.scheduleAtFixedRate(new TimerTask() {
+        new Thread(new Runnable() {
+            @Override
             public void run() {
-                //your code
-                String myTime = java.text.DateFormat.getTimeInstance().format(Calendar.getInstance().getTime());
-                TextView time = (TextView) findViewById(R.id.timeText);
-                time.setText(myTime);
+                while(!Thread.currentThread().isInterrupted()){
+                    try {
+                        doWork();
+                        Thread.sleep(1000); // Pause of 1 Second
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }catch(Exception e){
+                    }
+                }
             }
-        }, delay, period);
-        timer.purge();
+        }).start();
 
-        */
 
         if (pic != null && loc != null) {
             bg_pic = (ImageView) findViewById(R.id.pic);
             bg_pic.setImageBitmap(pic);
-            lat = (TextView) findViewById(R.id.lat);
-            lng = (TextView) findViewById(R.id.lng);
-            lat.setText(Float.toString(loc[0]));
-            lng.setText(Float.toString(loc[1]));
+            //lat = (TextView) findViewById(R.id.lat);
+            //lng = (TextView) findViewById(R.id.lng);
+            //lat.setText(Float.toString(loc[0]));
+            //lng.setText(Float.toString(loc[1]));
         }
         Log.d("ADebugTag", "IN EXPLORATION MODE");
         LocalBroadcastManager.getInstance(this).registerReceiver(
@@ -203,6 +209,23 @@ public class MainActivity extends Activity implements SensorEventListener {
         // TODO Auto-generated method stub
 
     }
+
+    public void doWork() {
+        runOnUiThread(new Runnable() {
+            public void run() {
+                try{
+                    TextView txtCurrentTime= (TextView)findViewById(R.id.timeText);
+                    Date dt = new Date();
+                    int hours = dt.getHours() - 7;
+                    int minutes = dt.getMinutes();
+                    int seconds = dt.getSeconds();
+                    String curTime = hours + ":" + minutes + ":" + seconds;
+                    txtCurrentTime.setText(curTime);
+                }catch (Exception e) {}
+            }
+        });
+    }
+
 
     public void notification(){
 
