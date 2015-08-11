@@ -185,13 +185,15 @@ public class locationActivity extends Activity implements
         radius_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         radius_spinner.setAdapter(radius_adapter);
 
-        Spinner sorting_spinner = (Spinner) findViewById(R.id.sorting_spinner);
+        MySpinner sorting_spinner = (MySpinner) findViewById(R.id.sorting_spinner);
         final ArrayAdapter<CharSequence> sorting_adapter = ArrayAdapter.createFromResource(this,
                 R.array.sorting, R.layout.spinner_item);
         sorting_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sorting_spinner.setAdapter(sorting_adapter);
 
         Log.d("ADebugTag", "Value: " + "done spinner");
+
+
 
         radius_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
@@ -219,6 +221,11 @@ public class locationActivity extends Activity implements
                             sortingItems(getSort());
                             showList();
                             loadExtraData();
+                        }else if (message.obj.equals("loadPages")){
+                            updateItemList();
+                            adapter.notifyDataSetChanged();
+                            loadExtraData();
+                            showToast();
                         }
 
                     }
@@ -233,6 +240,8 @@ public class locationActivity extends Activity implements
             }
 
         });
+
+
 
         sorting_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
@@ -258,9 +267,13 @@ public class locationActivity extends Activity implements
             @Override
             public void onNothingSelected(AdapterView<?> parentView) {
                 // your code here
+                Log.d("ADebugTag", "Value: " + "nothing selected");
             }
 
+
+
         });
+
     }
 
     protected void createLocationRequest() {
@@ -470,14 +483,6 @@ public class locationActivity extends Activity implements
     public void loadExtraData(){
 
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                searchPhotos(getRadius(), getSort(), getLat(), getLon(), currentPage + 1, "loadPages");
-            }
-        }).start();
-
-
         lv.setOnItemClickListener(this);
         lv.setOnScrollListener(new AbsListView.OnScrollListener() {
 
@@ -520,12 +525,16 @@ public class locationActivity extends Activity implements
 
 
                     //callSearchPhotos(getRadius(), getSort(), getLat(), getLon(), currentPage + 1);
+                    progressDialog.show();
 
-                    updateItemList();
-                    sortingItems(getSort());
-                    showList();
-                    loadExtraData();
-                    showToast();
+                    searchPhotos(getRadius(), getSort(), getLat(), getLon(), currentPage + 1, "loadPages");
+
+                    //updateItemList();
+                    //sortingItems(getSort());
+                    //showList();
+                    //adapter.notifyDataSetChanged();
+                    //loadExtraData();
+                    //showToast();
 
                     Log.d("ADebugTag", "currentPage: " + currentPage);
 
@@ -621,7 +630,7 @@ public class locationActivity extends Activity implements
             public void onClick(View v) {
                 // Perform action on click
 
-                if (fragPosition > 0 ){
+                if (fragPosition > 0) {
                     showFragments(fragPosition - 1);
                     fragPosition -= 1;
                 }
@@ -634,7 +643,7 @@ public class locationActivity extends Activity implements
             public void onClick(View v) {
                 // Perform action on click
 
-                if ((rowItemList.size() - fragPosition) <= 1){
+                if ((rowItemList.size() - fragPosition) <= 1) {
 
                     updateItemList();
                     sortingItems(getSort());
@@ -677,7 +686,7 @@ public class locationActivity extends Activity implements
         sendMsgIntent.putExtra("loc", loc.array());
         byte[] idByte = item.getPhotoId().getBytes(StandardCharsets.US_ASCII);
 
-       // Log.d("ADebugTag", "sendMessage photoId: " + item.getPhotoId());
+        // Log.d("ADebugTag", "sendMessage photoId: " + item.getPhotoId());
         sendMsgIntent.putExtra("photoId", idByte);
         startService(sendMsgIntent);
     }
@@ -738,7 +747,6 @@ public class locationActivity extends Activity implements
         newFragment = new MyFragment();
         ft = getFragmentManager().beginTransaction();
         ft.replace(R.id.overlay_fragment_container, newFragment).commit();
-
         */
     }
 

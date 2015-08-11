@@ -3,6 +3,7 @@ package com.example.hongjunjin.architecturehunt;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.inputmethodservice.Keyboard;
+import android.location.Location;
 import android.util.Log;
 
 import org.w3c.dom.Document;
@@ -214,12 +215,18 @@ public class MyThread extends Thread {
                         title = titleNode.getNodeValue();
 
                         Node locationNode = photoDoc.getDocumentElement().getChildNodes().item(1).getChildNodes().item(25);
+
+
                         float lat2 = Float.parseFloat(locationNode.getAttributes().item(0).getNodeValue());
                         float lng2 = Float.parseFloat(locationNode.getAttributes().item(1).getNodeValue());
                         float lat1 = Float.parseFloat(lat);
                         float lng1 = Float.parseFloat(lon);
                         distance = distFrom(lat1, lng1, lat2, lng2);
                         float loc[] = new float[]{lat2, lng2};
+
+                        //location = new Location("");
+                        //location.setLatitude(lat2);
+                        //location.setLongitude(lng2);
 
 
                         int favNum = Integer.parseInt(favDoc.getDocumentElement().getChildNodes().item(1).getAttributes().item(7).getNodeValue());

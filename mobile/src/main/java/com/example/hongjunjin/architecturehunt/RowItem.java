@@ -1,6 +1,7 @@
 package com.example.hongjunjin.architecturehunt;
 
 import android.graphics.Bitmap;
+import android.location.Location;
 
 /**
  * Created by hongjunjin on 7/22/15.
