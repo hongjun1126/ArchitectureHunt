@@ -214,13 +214,15 @@ public class MainActivity extends Activity implements SensorEventListener {
         runOnUiThread(new Runnable() {
             public void run() {
                 try{
+
                     TextView txtCurrentTime= (TextView)findViewById(R.id.timeText);
-                    Date dt = new Date();
-                    int hours = dt.getHours() - 7;
-                    int minutes = dt.getMinutes();
-                    int seconds = dt.getSeconds();
-                    String curTime = hours + ":" + minutes + ":" + seconds;
-                    txtCurrentTime.setText(curTime);
+
+                    Calendar cal = Calendar.getInstance();
+                    SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+                    sdf.setTimeZone(TimeZone.getTimeZone("America/Vancouver"));
+
+                    txtCurrentTime.setText(sdf.format(cal.getTime()));
+
                 }catch (Exception e) {}
             }
         });

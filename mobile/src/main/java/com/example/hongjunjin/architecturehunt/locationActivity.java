@@ -640,6 +640,7 @@ public class locationActivity extends Activity implements
                     loadExtraData();
                     showToast();
                     fragPosition = -1;
+                    Log.d("ADebugTag", "currentPage: " + currentPage);
                 }
 
                 showFragments(fragPosition + 1);
