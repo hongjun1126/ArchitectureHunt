@@ -1,5 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginLeft="175dp"
+        android:layout_alignBottom="@+id/item_background"
+        android:background="#000000"></RelativeLayout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:id="@+id/item_background"
@@ -23,9 +34,9 @@
             android:id="@+id/title"
             android:scrollHorizontally="true"
             android:ellipsize="end"
-            android:maxLines="1"
+            android:maxLines="2"
             android:layout_marginTop="8dp"
-            android:layout_marginRight="80dp"
+            android:layout_marginRight="10dp"
             android:layout_width="fill_parent"
             android:textColor="@color/Black"
             android:layout_height="wrap_content"
@@ -36,6 +47,28 @@
         <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent">
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/walk_container"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="10dp"
+                android:gravity="bottom">
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="+"
+                android:id="@+id/plus"
+                android:textStyle="bold"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="10dp"
+                android:layout_toRightOf="@+id/walk_container"
+                android:visibility="gone" />
+
             <TextView
                 android:id="@+id/distance"
                 android:layout_width="wrap_content"
@@ -43,7 +76,9 @@
                 android:layout_alignParentBottom="true"
                 android:layout_marginBottom="10dp"
                 android:textColor="@color/Gray"
-                android:textSize="12dp" />
+                android:textSize="12dp"
+                android:layout_toRightOf="@+id/plus"
+                android:layout_marginLeft="5dp" />
 
         </RelativeLayout>
 
@@ -92,13 +127,8 @@
 
         </LinearLayout>
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_alignParentBottom="false"
-            android:layout_alignParentEnd="false"
-            android:background="#cfcfcf"></RelativeLayout>
     </RelativeLayout>
 
 
 </LinearLayout>
+</RelativeLayout>

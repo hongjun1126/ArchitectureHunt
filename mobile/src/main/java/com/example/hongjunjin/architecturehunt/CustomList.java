@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import java.util.List;
 
@@ -27,6 +28,7 @@ import java.util.List;
 public class CustomList extends ArrayAdapter<RowItem> {
 
     Context context;
+    int radius;
     protected static final int IMAGE_PIXEL = 30;
 
     public CustomList(Context context, int resourceId, List<RowItem> items) {
@@ -42,6 +44,7 @@ public class CustomList extends ArrayAdapter<RowItem> {
         TextView favNumber;
         ImageView imageStar;
         LinearLayout background;
+        LinearLayout walk_container;
 
     }
 
@@ -62,6 +65,7 @@ public class CustomList extends ArrayAdapter<RowItem> {
             holder.favNumber = (TextView) convertView.findViewById(R.id.favorite);
             holder.imageStar = (ImageView) convertView.findViewById(R.id.star);
             holder.background = (LinearLayout) convertView.findViewById(R.id.item_background);
+            holder.walk_container = (LinearLayout) convertView.findViewById(R.id.walk_container);
 
             convertView.setTag(holder);
         } else
@@ -99,10 +103,31 @@ public class CustomList extends ArrayAdapter<RowItem> {
         ColorMatrixColorFilter filter = new ColorMatrixColorFilter(matrix);
         ob.setColorFilter(filter);
         holder.background.setBackground(ob);
-        holder.background.getBackground().setAlpha(30);
+        holder.background.getBackground().setAlpha(25);
         holder.txtDist.setText(rowItem.getDistInString());
         holder.favNumber.setText(rowItem.getFavInString());
         holder.imageStar.setImageResource(R.drawable.flickrccc);
+        holder.walk_container.removeAllViews();
+        int walk_amt = Math.round(rowItem.getDist() / 0.5f) + 1;
+        if (walk_amt > 10) {
+            walk_amt = 10;
+            convertView.findViewById(R.id.plus).setVisibility(View.VISIBLE);
+        }
+        else {
+            convertView.findViewById(R.id.plus).setVisibility(View.GONE);
+        }
+
+        View[] tiles = new RelativeLayout[walk_amt];
+// get reference to LayoutInflater
+        LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+        for(int i = 0; i<tiles.length; i++) {
+            //Creating copy of imageview by inflating it
+            View image = inflater.inflate(R.layout.walk_man, holder.walk_container, false);
+            tiles[i] = image;
+            tiles[i].setId(i);
+            holder.walk_container.addView(tiles[i]);
+        }
 
         return convertView;
     }
