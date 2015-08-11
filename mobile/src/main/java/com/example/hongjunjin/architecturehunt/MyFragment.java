@@ -25,7 +25,7 @@ public class MyFragment extends Fragment {
 
         img = Bitmap.createScaledBitmap(img, Math.round(img.getWidth() * scale), Math.round(height), true);
         locationActivity.frag_img.setImageBitmap(img);
-        locationActivity.frag_name.setText(item.getTitle());
+        locationActivity.frag_name.setText("\"" + item.getTitle() + "\"");
         locationActivity.flayout.setVisibility(View.VISIBLE);
 
     }

@@ -275,6 +275,7 @@ public class MyThread extends Thread {
     public Bitmap getBitMap(String picUrl){
 
         URL url = null;
+
         try {
             url = new URL(picUrl);
         } catch (MalformedURLException e) {

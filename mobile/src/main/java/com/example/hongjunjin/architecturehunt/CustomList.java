@@ -3,8 +3,13 @@ package com.example.hongjunjin.architecturehunt;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
+import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -13,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import java.util.List;
 
@@ -22,6 +28,7 @@ import java.util.List;
 public class CustomList extends ArrayAdapter<RowItem> {
 
     Context context;
+    int radius;
     protected static final int IMAGE_PIXEL = 30;
 
     public CustomList(Context context, int resourceId, List<RowItem> items) {
@@ -37,6 +44,7 @@ public class CustomList extends ArrayAdapter<RowItem> {
         TextView favNumber;
         ImageView imageStar;
         LinearLayout background;
+        LinearLayout walk_container;
 
     }
 
@@ -57,6 +65,7 @@ public class CustomList extends ArrayAdapter<RowItem> {
             holder.favNumber = (TextView) convertView.findViewById(R.id.favorite);
             holder.imageStar = (ImageView) convertView.findViewById(R.id.star);
             holder.background = (LinearLayout) convertView.findViewById(R.id.item_background);
+            holder.walk_container = (LinearLayout) convertView.findViewById(R.id.walk_container);
 
             convertView.setTag(holder);
         } else
@@ -79,9 +88,46 @@ public class CustomList extends ArrayAdapter<RowItem> {
         Bitmap squareRoundBmp = ImageHelper.getRoundedCornerBitmap(bmpSquare, IMAGE_PIXEL);
 
         holder.imageView.setImageBitmap(squareRoundBmp);
+        Bitmap img = rowItem.getBmp();
+        float width = parent.getWidth();
+        float scale = width / img.getWidth();
+
+        img = Bitmap.createScaledBitmap(img, Math.round(width), Math.round(img.getHeight() * scale), true);
+        float density = getContext().getResources().getDisplayMetrics().density;
+        int px = Math.round(80 * density);
+        img = Bitmap.createBitmap(img, 0, img.getHeight() / 3, img.getWidth(), px);
+
+        BitmapDrawable ob = new BitmapDrawable(getContext().getResources(), img);
+        ColorMatrix matrix = new ColorMatrix();
+        matrix.setSaturation(0);
+        ColorMatrixColorFilter filter = new ColorMatrixColorFilter(matrix);
+        ob.setColorFilter(filter);
+        holder.background.setBackground(ob);
+        holder.background.getBackground().setAlpha(25);
         holder.txtDist.setText(rowItem.getDistInString());
         holder.favNumber.setText(rowItem.getFavInString());
         holder.imageStar.setImageResource(R.drawable.flickrccc);
+        holder.walk_container.removeAllViews();
+        int walk_amt = Math.round(rowItem.getDist() / 0.5f) + 1;
+        if (walk_amt > 10) {
+            walk_amt = 10;
+            convertView.findViewById(R.id.plus).setVisibility(View.VISIBLE);
+        }
+        else {
+            convertView.findViewById(R.id.plus).setVisibility(View.GONE);
+        }
+
+        View[] tiles = new RelativeLayout[walk_amt];
+// get reference to LayoutInflater
+        LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+        for(int i = 0; i<tiles.length; i++) {
+            //Creating copy of imageview by inflating it
+            View image = inflater.inflate(R.layout.walk_man, holder.walk_container, false);
+            tiles[i] = image;
+            tiles[i].setId(i);
+            holder.walk_container.addView(tiles[i]);
+        }
 
         return convertView;
     }

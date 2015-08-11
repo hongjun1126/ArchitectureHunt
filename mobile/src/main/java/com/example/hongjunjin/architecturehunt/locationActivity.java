@@ -145,8 +145,13 @@ public class locationActivity extends Activity implements
             public void onClick(View v) {
                 navigating = false;
                 item.navigating = false;
+
                 //showList(getSort());
-                adapter.notifyDataSetInvalidated();
+
+
+                adapter.notifyDataSetChanged();
+
+
                 stop_nav.setVisibility(View.INVISIBLE);
                 curr_nav_container.setVisibility(View.INVISIBLE);
                 sendMessageToWear_fin();

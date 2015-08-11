@@ -12,9 +12,9 @@
 
             <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:background="@color/Ivory"
+                android:background="#ffffff"
                 android:id="@+id/relativeLayer"
-                android:elevation="2dp">
+                android:elevation="15dp">
 
                 <TextView
                     android:id="@+id/radiusText"
@@ -55,18 +55,26 @@
                     android:gravity="left"
                     />
 
-                <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="72dp"
-                    android:text="STOP NAV"
-                    android:textSize="12dp"
-                    android:id="@+id/stop_nav"
-                    android:layout_alignParentRight="true"
-                    android:layout_marginLeft="10dp"
-                    android:layout_alignParentEnd="false"
-                    android:layout_centerVertical="true"
-                    android:background="#d1e1ff"
-                    android:visibility="invisible" />
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="72dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true">
+
+                    <Button
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:textSize="12dp"
+                        android:id="@+id/stop_nav"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentEnd="false"
+                        android:layout_centerVertical="true"
+                        android:background="@drawable/stop"
+                        android:visibility="invisible"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="10dp" />
+                </LinearLayout>
+
             </RelativeLayout>
 
             <ListView
@@ -92,11 +100,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_alignParentStart="false"
-                android:background="@color/Ivory"
+                android:background="#ffffff"
                 android:layout_alignBottom="@+id/linearLayer"
                 android:id="@+id/curr_nav"
                 android:visibility="visible"
-                android:elevation="5dp"
                 android:gravity="fill_horizontal"
                 android:layout_gravity="top"
                 android:layout_weight="1">
@@ -165,38 +172,71 @@
                 android:layout_gravity="right"
                 android:typeface="sans"
                 android:layout_marginLeft="25dp"
-                android:layout_marginRight="10dp" />
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:id="@+id/frag_img"
-                android:focusableInTouchMode="false"
-                android:visibility="visible"
-                android:layout_marginBottom="10dp"
-                android:layout_weight="1"
-                android:layout_height="0dp" />
+                android:layout_marginRight="10dp"
+                android:gravity="right"
+                android:textStyle="bold"
+                android:text="&quot;Sample Text&quot;" />
 
             <RelativeLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="#6c6c6c"></RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginBottom="10dp">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:id="@+id/frag_img"
+                    android:focusableInTouchMode="false"
+                    android:visibility="visible"
+                    android:layout_weight="1"
+                    android:layout_height="fill_parent"
+                    android:layout_centerInParent="true" />
+
+                <RelativeLayout
+                    android:layout_width="55dp"
+                    android:layout_height="80dp"
+                    android:layout_centerVertical="true"
+                    android:alpha=".25"
+                    android:background="#000000"></RelativeLayout>
 
                 <Button
                     android:id="@+id/frag_upButton"
-                    android:layout_width="130dp"
-                    android:layout_height="35dp"
+
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
                     android:textSize="15dp"
                     android:textColor="@color/White"
-                    android:text="Previous" />
+                    android:layout_centerVertical="true"
+                    android:background="@drawable/arrow_left"
+                    android:layout_marginLeft="-4dp"
+                    android:alpha=".5" />
 
+
+                <RelativeLayout
+                    android:layout_width="55dp"
+                    android:layout_height="80dp"
+                    android:alpha=".25"
+                    android:background="#000000"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentEnd="true"></RelativeLayout>
 
                 <Button
                     android:id="@+id/frag_downButton"
-                    android:layout_width="130dp"
-                    android:layout_height="35dp"
+
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
                     android:textSize="15dp"
-                    android:layout_toRightOf="@id/frag_upButton"
                     android:textColor="@color/White"
-                    android:text="Next" />
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentRight="false"
+                    android:layout_alignParentEnd="true"
+                    android:background="@drawable/arrow_right"
+                    android:alpha=".5" />
 
             </RelativeLayout>
 

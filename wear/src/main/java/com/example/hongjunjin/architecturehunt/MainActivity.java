@@ -115,7 +115,7 @@ public class MainActivity extends Activity implements SensorEventListener {
             //lat.setText(Float.toString(loc[0]));
             //lng.setText(Float.toString(loc[1]));
         }
-        Log.d("ADebugTag", "IN EXPLORATION MODE");
+        Log.d("Wear_MAINACTIVITY", "IN EXPLORATION MODE");
         LocalBroadcastManager.getInstance(this).registerReceiver(
                 mMessageReceiver, new IntentFilter("new_dist_rot"));
 
@@ -130,10 +130,10 @@ public class MainActivity extends Activity implements SensorEventListener {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getBooleanExtra("finish", false)) {
-                Log.d("ADebugTag", "received the finish broadcast from messenger");
+                Log.d("MAINACTIVITY", "received the finish broadcast from LOCALSERVICE");
                 finish();
             } else if (pic != null && loc!=null) {
-                Log.d("ADebugTag", "received the right broadcast from messenger");
+                Log.d("MainActivity", "received the right broadcast from LOCALSERVICE");
                 Bundle data = intent.getBundleExtra("data");
                 dest_dist = data.getFloat("distance");
                 Log.d("DestDISTANCE", Float.toString(dest_dist));
@@ -218,7 +218,7 @@ public class MainActivity extends Activity implements SensorEventListener {
                     TextView txtCurrentTime= (TextView)findViewById(R.id.timeText);
 
                     Calendar cal = Calendar.getInstance();
-                    SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+                    SimpleDateFormat sdf = new SimpleDateFormat("K:mm aa");
                     sdf.setTimeZone(TimeZone.getTimeZone("America/Vancouver"));
 
                     txtCurrentTime.setText(sdf.format(cal.getTime()));
@@ -248,9 +248,10 @@ public class MainActivity extends Activity implements SensorEventListener {
         Log.d("ADebugTag", "notification photoId in intent: " + favoriteIntent.getStringExtra("key"));
 
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.drawable.icon)
-                .setContentTitle("ArchitectureHunt")
+                .setSmallIcon(R.drawable.build_logo)
+                .setContentTitle("The Building Scavenger")
                 .setContentText("You've arrived.")
+                .setLargeIcon(pic)
                 .setContentIntent(cameraPendingIntent)
                 .setContentIntent(favoritePendingIntent)
                 .addAction(R.drawable.flickrccc, "Favorite", favoritePendingIntent)
