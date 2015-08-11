@@ -29,6 +29,9 @@ public class MyThread extends Thread {
     protected static final String getSizeMethod = "flickr.photos.getSizes";
     protected static final String getInfoMethod = "flickr.photos.getInfo";
     protected static final String getFavMethod = "flickr.photos.getFavorites";
+    protected static final String pictureWidth = "500";
+    protected static final String pictureHeight = "500";
+    protected static final int IMAGE_PIXEL = 50;
 
     // using multi-threads to retrieve data from Flickr. Default number of threads I set here is 20
     public void run() {
@@ -152,6 +155,7 @@ public class MyThread extends Thread {
                 photoSizesURL.append("&photo_id=");
                 photoSizesURL.append(photoId);
                 tempURL = photoSizesURL.toString();
+                //Log.d("ADebugTag", "url: " + tempURL);
 
                 try {
 
@@ -192,32 +196,43 @@ public class MyThread extends Thread {
                     favDoc.getDocumentElement().normalize();
 
                     //Log.d("ADebugTag", "faverites: " + favDoc.getDocumentElement().getChildNodes().item(1).getAttributes().item(7).getNodeValue());
-                    int favNum = Integer.parseInt(favDoc.getDocumentElement().getChildNodes().item(1).getAttributes().item(7).getNodeValue());
 
 
-                    //Log.d("ADebugTag", "Value: " + photoSizeDoc.getDocumentElement().getChildNodes().item(1).getChildNodes().item(7).getAttributes().item(3).getNodeValue());
-                    String picURL = photoSizeDoc.getDocumentElement().getChildNodes().item(1).getChildNodes().item(7).getAttributes().item(3).getNodeValue();
-                    Bitmap bmp = getBitMap(picURL);
-
-
-                    Node locationNode = photoDoc.getDocumentElement().getChildNodes().item(1).getChildNodes().item(25);
-                    float lat2 = Float.parseFloat(locationNode.getAttributes().item(0).getNodeValue());
-                    float lng2 = Float.parseFloat(locationNode.getAttributes().item(1).getNodeValue());
-                    float lat1 = Float.parseFloat(lat);
-                    float lng1 = Float.parseFloat(lon);
-                    distance = distFrom(lat1, lng1, lat2, lng2);
-                    float loc[] = new float[]{lat2, lng2};
-
+                    //Log.d("ADebugTag", "Value: " + photoSizeDoc.getDocumentElement().getChildNodes().item(1).getChildNodes().item(11).getAttributes().item(2).getNodeValue());
+                   // Log.d("ADebugTag", "Value: " + photoSizeDoc.getDocumentElement().getChildNodes().item(1).getChildNodes().item(11).getAttributes().item(3).getNodeValue());
 
                     Node titleNode = photoDoc.getDocumentElement().getChildNodes().item(1).getChildNodes().item(3).getChildNodes().item(0);
-                    if (titleNode != null) {
+
+                    String picWidth = photoSizeDoc.getDocumentElement().getChildNodes().item(1).getChildNodes().item(11).getAttributes().item(1).getNodeValue();
+                    String picHeight = photoSizeDoc.getDocumentElement().getChildNodes().item(1).getChildNodes().item(11).getAttributes().item(2).getNodeValue();
+                    if (picWidth.equals(pictureWidth) && !(picHeight.equals(pictureHeight)) && titleNode != null){
+
+                        String picURL = photoSizeDoc.getDocumentElement().getChildNodes().item(1).getChildNodes().item(11).getAttributes().item(3).getNodeValue();
+                        Bitmap bmp = getBitMap(picURL);
+
+
                         title = titleNode.getNodeValue();
-                    } else {
-                        title = "";
+
+                        Node locationNode = photoDoc.getDocumentElement().getChildNodes().item(1).getChildNodes().item(25);
+                        float lat2 = Float.parseFloat(locationNode.getAttributes().item(0).getNodeValue());
+                        float lng2 = Float.parseFloat(locationNode.getAttributes().item(1).getNodeValue());
+                        float lat1 = Float.parseFloat(lat);
+                        float lng1 = Float.parseFloat(lon);
+                        distance = distFrom(lat1, lng1, lat2, lng2);
+                        float loc[] = new float[]{lat2, lng2};
+
+
+                        int favNum = Integer.parseInt(favDoc.getDocumentElement().getChildNodes().item(1).getAttributes().item(7).getNodeValue());
+
+
+                        RowItem item = new RowItem(bmp, title, distance, favNum, loc, photoId);
+                        rowItems.add(item);
+
                     }
 
-                    RowItem item = new RowItem(bmp, title, distance, favNum, loc, photoId);
-                    rowItems.add(item);
+
+
+
 
 
                 } catch (MalformedURLException e) {

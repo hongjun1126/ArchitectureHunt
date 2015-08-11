@@ -13,60 +13,59 @@
             <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:background="@color/Ivory"
+                android:id="@+id/relativeLayer"
                 android:elevation="2dp">
 
                 <TextView
                     android:id="@+id/radiusText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:paddingLeft="100dp"
-                    android:paddingRight="10dp"
-                    android:layout_marginTop="20dp"
-                    android:textSize="16dp"/>
+                    android:layout_marginTop="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:textSize="14dp"/>
 
                 <Spinner
                     android:id="@+id/radius_spinner"
-                    android:layout_width="95dp"
+                    android:layout_width="220dp"
                     android:layout_height="wrap_content"
                     android:layout_toRightOf="@+id/radiusText"
                     android:textAlignment="center"
-                    android:gravity="center_horizontal"
-                    android:layout_marginTop="18dp"/>
+                    android:gravity="left"
+                    android:layout_marginLeft="10dp" />
 
                 <TextView
                     android:id="@+id/sortText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/radiusText"
-                    android:paddingLeft="100dp"
-                    android:paddingRight="10dp"
-                    android:layout_marginTop="10dp"
-                    android:textSize="16dp"
-                    android:layout_marginBottom="20dp"/>
+                    android:layout_marginLeft="10dp"
+                    android:textSize="14dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginTop="10dp"/>
 
                 <Spinner
                     android:id="@+id/sorting_spinner"
-                    android:layout_width="95dp"
+                    android:layout_width="220dp"
                     android:layout_height="wrap_content"
                     android:layout_toRightOf="@+id/sortText"
-                    android:layout_below="@+id/radius_spinner"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="30dp"
+                    android:layout_marginLeft="10dp"
                     android:textAlignment="center"
-                    android:gravity="center_horizontal"
-                    android:layout_marginBottom="20dp"
-
+                    android:layout_marginBottom="8dp"
+                    android:gravity="left"
                     />
 
                 <Button
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="72dp"
                     android:text="STOP NAV"
+                    android:textSize="12dp"
                     android:id="@+id/stop_nav"
                     android:layout_alignParentRight="true"
-                    android:layout_margin="5dp"
+                    android:layout_marginLeft="10dp"
                     android:layout_alignParentEnd="false"
                     android:layout_centerVertical="true"
-                    android:background="@color/OrangeRed"
+                    android:background="#d1e1ff"
                     android:visibility="invisible" />
             </RelativeLayout>
 
@@ -106,6 +105,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="NAVIGATING TO:"
+                    android:textStyle="italic"
                     android:id="@+id/textView3"
                     android:layout_margin="5dp" />
 
@@ -113,13 +113,16 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Large Text"
-                    android:textStyle="bold"
+                    android:layout_below="@+id/textView3"
                     android:id="@+id/nav_title"
-                    android:maxWidth="200dp"
-                    android:gravity="center_horizontal"
+                    android:scrollHorizontally="true"
+                    android:ellipsize="end"
+                    android:maxLines="2"
+                    android:textStyle="bold"
                     android:layout_centerHorizontal="true"
                     android:layout_alignParentBottom="true"
-                    android:layout_marginBottom="10dp" />
+                    android:layout_marginBottom="5dp"
+                    />
 
             </RelativeLayout>
 
@@ -138,6 +141,7 @@
     <FrameLayout android:id="@+id/overlay_fragment_container"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
+        android:clickable="true"
         android:visibility="invisible">
 
         <LinearLayout
@@ -153,12 +157,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="Large Text"
+                android:textSize="18dp"
                 android:id="@+id/frag_name"
                 android:textColor="#ffffff"
                 android:layout_marginTop="30dp"
+                android:layout_marginBottom="10dp"
                 android:layout_gravity="right"
-                android:textStyle="bold"
+                android:typeface="sans"
+                android:layout_marginLeft="25dp"
                 android:layout_marginRight="10dp" />
 
             <ImageView
@@ -166,9 +172,33 @@
                 android:id="@+id/frag_img"
                 android:focusableInTouchMode="false"
                 android:visibility="visible"
-                android:layout_marginBottom="30dp"
+                android:layout_marginBottom="10dp"
                 android:layout_weight="1"
                 android:layout_height="0dp" />
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <Button
+                    android:id="@+id/frag_upButton"
+                    android:layout_width="90dp"
+                    android:layout_height="35dp"
+                    android:textSize="15dp"
+                    android:textColor="@color/White"
+                    android:text="Previous" />
+
+
+                <Button
+                    android:id="@+id/frag_downButton"
+                    android:layout_width="90dp"
+                    android:layout_height="35dp"
+                    android:textSize="15dp"
+                    android:layout_toRightOf="@id/frag_upButton"
+                    android:textColor="@color/White"
+                    android:text="Next" />
+
+            </RelativeLayout>
 
             <TextView
                 android:layout_width="wrap_content"

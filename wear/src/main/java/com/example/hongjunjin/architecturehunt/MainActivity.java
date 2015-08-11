@@ -35,8 +35,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
-
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Locale;
 import java.util.Set;
+import java.util.TimeZone;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MainActivity extends Activity implements SensorEventListener {
 
@@ -70,31 +78,46 @@ public class MainActivity extends Activity implements SensorEventListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.round_activity_main);
+
+        Log.d("ADebugTag", "onCreate photoId: " + "in mainActivity");
         mSensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         mMagnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
         mPointer = (ImageView) findViewById(R.id.pointer);
-        Intent intent = getIntent();
-        pic = intent.getParcelableExtra("pic");
-        loc = intent.getFloatArrayExtra("loc");
-        photoId = intent.getStringExtra("photoId");
 
-        Log.d("ADebugTag", "onCreate photoId: " + photoId);
+        pic = messengerService.bm;
+        loc = messengerService.float_loc;
+        photoId = messengerService.pictureId;
 
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while(!Thread.currentThread().isInterrupted()){
+                    try {
+                        doWork();
+                        Thread.sleep(1000); // Pause of 1 Second
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }catch(Exception e){
+                    }
+                }
+            }
+        }).start();
 
 
         if (pic != null && loc != null) {
             bg_pic = (ImageView) findViewById(R.id.pic);
             bg_pic.setImageBitmap(pic);
-            lat = (TextView) findViewById(R.id.lat);
-            lng = (TextView) findViewById(R.id.lng);
-            lat.setText(Float.toString(loc[0]));
-            lng.setText(Float.toString(loc[1]));
+            //lat = (TextView) findViewById(R.id.lat);
+            //lng = (TextView) findViewById(R.id.lng);
+            //lat.setText(Float.toString(loc[0]));
+            //lng.setText(Float.toString(loc[1]));
         }
         Log.d("ADebugTag", "IN EXPLORATION MODE");
         LocalBroadcastManager.getInstance(this).registerReceiver(
                 mMessageReceiver, new IntentFilter("new_dist_rot"));
-
 
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -186,6 +209,25 @@ public class MainActivity extends Activity implements SensorEventListener {
         // TODO Auto-generated method stub
 
     }
+
+    public void doWork() {
+        runOnUiThread(new Runnable() {
+            public void run() {
+                try{
+
+                    TextView txtCurrentTime= (TextView)findViewById(R.id.timeText);
+
+                    Calendar cal = Calendar.getInstance();
+                    SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+                    sdf.setTimeZone(TimeZone.getTimeZone("America/Vancouver"));
+
+                    txtCurrentTime.setText(sdf.format(cal.getTime()));
+
+                }catch (Exception e) {}
+            }
+        });
+    }
+
 
     public void notification(){
 

@@ -4,51 +4,44 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.hardware.GeomagneticField;
 import android.location.Location;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
-import android.view.animation.AnimationSet;
 import android.view.animation.TranslateAnimation;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.wearable.CapabilityApi;
-import com.google.android.gms.wearable.Wearable;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.w3c.dom.Text;
 import org.xml.sax.SAXException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -56,8 +49,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -71,8 +62,8 @@ public class locationActivity extends Activity implements
     protected static final String restURL = "https://api.flickr.com/services/rest/";
     protected static final String searchMethod = "flickr.photos.search";
     protected static final int numberOfThreads = 20;
-    protected static final String CAPABILITY_NAME = "compass";
-    protected static final String RECEIVER_SERVICE_PATH = "/compass";
+    protected static final int defaultPage = 1;
+
 
     Location mCurrentLocation;
     LocationRequest mLocationRequest;
@@ -87,19 +78,23 @@ public class locationActivity extends Activity implements
     private Flickr_login flickr;
     private ListView lv;
     protected static List<RowItem> rowItems;
+    protected static List<RowItem> rowItemList;
     protected static NodeList nodeList;
-    protected static ProgressDialog progress;
     protected static long threadId;
     private List<Thread> threadList;
-    private static final int CONTENT_VIEW_ID = 10101010;
     protected static RowItem item;
     protected static FrameLayout flayout;
     protected static Button compassButton;
     protected static Button GPSbutton;
     protected static ImageView frag_img;
     protected static TextView frag_name;
+    protected static Button frag_upButton;
+    protected static Button frag_downButton;
 
     protected static LinearLayout ll;
+    protected static LinearLayout llItem;
+    protected static RelativeLayout rl;
+
     protected static Button backButton;
     protected TextView nav_title;
     protected ImageView nav_img;
@@ -107,11 +102,17 @@ public class locationActivity extends Activity implements
 
     protected static Fragment newFragment;
     protected static FragmentTransaction ft;
-    private SharedPreferences sharedPref;
     private boolean navigating = false;
     private Location nav_loc;
     private Button stop_nav;
-
+    private CustomList adapter;
+    protected int currentPage;
+    protected ListView lsView;
+    private Handler handler;
+    private ProgressDialog progressDialog;
+    private int index;
+    private int top;
+    private int fragPosition;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -122,12 +123,18 @@ public class locationActivity extends Activity implements
 
 
         flickr = new Flickr_login();
+
         compassButton = (Button)findViewById(R.id.compassButton);
         GPSbutton = (Button)findViewById(R.id.GPSbutton);
         backButton = (Button)findViewById(R.id.backButton);
         frag_img = (ImageView)findViewById(R.id.frag_img);
         frag_name = (TextView) findViewById(R.id.frag_name);
+        frag_upButton = (Button) findViewById(R.id.frag_upButton);
+        frag_downButton = (Button) findViewById(R.id.frag_downButton);
         ll = (LinearLayout)findViewById(R.id.linearLayer);
+        rl = (RelativeLayout)findViewById(R.id.relativeLayer);
+        llItem = (LinearLayout)findViewById(R.id.item_background);
+        lsView = (ListView) findViewById(R.id.list);
         flayout = (FrameLayout)findViewById(R.id.overlay_fragment_container);
         nav_img = (ImageView) findViewById(R.id.nav_img);
         nav_title = (TextView) findViewById(R.id.nav_title);
@@ -138,7 +145,7 @@ public class locationActivity extends Activity implements
             public void onClick(View v) {
                 navigating = false;
                 item.navigating = false;
-                showList(getSort());
+                //showList(getSort());
                 stop_nav.setVisibility(View.INVISIBLE);
                 curr_nav_container.setVisibility(View.INVISIBLE);
                 sendMessageToWear_fin();
@@ -149,13 +156,16 @@ public class locationActivity extends Activity implements
         createLocationRequest();
         this.mGoogleApiClient.connect();
 
-        progress = new ProgressDialog(this);
-        progress.setMessage("Loading...");
-        progress.setIndeterminate(true);
-        progress.setCancelable(false);
-        progress.show();
+
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Loading...");
+        progressDialog.setIndeterminate(true);
+        progressDialog.setCancelable(false);
+
 
     }
+
+
 
     public void spinnerHelper(){
 
@@ -191,8 +201,26 @@ public class locationActivity extends Activity implements
                 String radiusNum = radius_selected.substring(0, 1);
                 setRadius(radiusNum);
 
-                searchPhotos(getRadius(), getSort(), getLat(), getLon());
-                //Log.d("ADebugTag", "in radius spinner: " + Thread.currentThread().getName());
+                System.out.println("in radius spinnerha: " + Thread.currentThread().getName());
+                progressDialog.show();
+
+                rowItemList = new ArrayList<RowItem>();
+                currentPage = 0;
+                searchPhotos(getRadius(), getSort(), getLat(), getLon(), defaultPage, "radius");
+
+                handler = new Handler() {
+                    @Override
+                    public void handleMessage(Message message) {
+
+                        if (message.obj.equals("radius") || message.obj.equals("onLocationChange")) {
+                            updateItemList();
+                            sortingItems(getSort());
+                            showList();
+                            loadExtraData();
+                        }
+
+                    }
+                };
 
             }
 
@@ -219,7 +247,9 @@ public class locationActivity extends Activity implements
                     firstTime = false;
 
                 } else {
-                    searchPhotos(getRadius(), getSort(), getLat(), getLon());
+                    sortingItems(getSort());
+                    showList();
+                    //searchPhotos(getRadius(), getSort(), getLat(), getLon(), defaultPage);
                 }
             }
 
@@ -285,9 +315,13 @@ public class locationActivity extends Activity implements
             Log.e("LOCATION CHANGED", Float.toString(location.distanceTo(prev_location)));
 
             Log.e("LOCATION CHANGED", ">>>>>>>>>>>>>>CALLING SEARCH PHOTOS");
-            progress.show();
+
+            progressDialog.show();
             set_new_curr_location(location);
-            searchPhotos(getRadius(), getSort(), getLat(), getLon());
+            rowItemList = new ArrayList<RowItem>();
+            currentPage = 0;
+            searchPhotos(getRadius(), getSort(), getLat(), getLon(), defaultPage, "onLocationChange");
+
         }
     }
 
@@ -298,12 +332,13 @@ public class locationActivity extends Activity implements
 
     }
 
-    public void searchPhotos(final String radius, String sorting, final String lat, final String lon){
-        progress.show();
+    private void searchPhotos(final String radius, String sorting, final String lat, final String lon, final int page, final String sender){
+
         rowItems = new ArrayList<RowItem>();
         threadList = new ArrayList<Thread>();
 
         Thread t = new Thread(new Runnable() {
+
             @Override
             public void run() {
 
@@ -329,6 +364,8 @@ public class locationActivity extends Activity implements
                 searchBuffer.append(lon);
                 searchBuffer.append("&media=photo&per_page=");
                 searchBuffer.append(perPage);
+                searchBuffer.append("&page=");
+                searchBuffer.append(page);
 //                searchBuffer.append("&sort=interestingness-desc");
                 String searchURL = searchBuffer.toString();
 
@@ -357,6 +394,7 @@ public class locationActivity extends Activity implements
                                 threadList.add(t);
                             }
 
+
                             for (int i = 0; i < threadList.size(); i++){
                                 try {
                                     threadList.get(i).join();
@@ -365,16 +403,11 @@ public class locationActivity extends Activity implements
                                 }
                             }
 
-                            progress.dismiss();
+                            progressDialog.dismiss();
 
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    showList(getSort());
-
-
-                                }
-                            });
+                            Message message = Message.obtain();
+                            message.obj = sender;
+                            handler.sendMessage(message);
 
 
                         } catch (SAXException e) {
@@ -398,29 +431,58 @@ public class locationActivity extends Activity implements
 
     }
 
-    private CustomList adapter;
-    public void showList(String sorting){
+    public void updateItemList(){
+
+        for (int i = 0; i < rowItems.size(); i++) {
+            rowItemList.add(rowItems.get(i));
+        }
+    }
 
 
-        Log.d("ADebugTag", "title: " + "in showList");
+    public void sortingItems(String sorting) {
+
+
+        Log.d("ADebugTag", "title: " + "in sortingItems");
 
         //Log.d("ADebugTag", "showList: " + Thread.currentThread().getName());
 
-        if (sorting == null || sorting.equals("Distance")){
+        if (sorting == null || sorting.equals("Distance")) {
             sortByDistance();
-        }else{
+        } else {
             sortByFavorite();
         }
+    }
+
+    public void showList() {
+
 
         lv = (ListView) findViewById(R.id.list);
 
         adapter = new CustomList(this,
-                R.layout.listitem, rowItems);
+                R.layout.listitem, rowItemList);
 
         lv.setAdapter(adapter);
 
+    }
+
+    public void loadExtraData(){
+
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                searchPhotos(getRadius(), getSort(), getLat(), getLon(), currentPage + 1, "loadPages");
+            }
+        }).start();
+
+
         lv.setOnItemClickListener(this);
         lv.setOnScrollListener(new AbsListView.OnScrollListener() {
+
+            private int visibleThreshold = 1;
+            private int previousTotal = 0;
+            private boolean loading = true;
+
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
                 if (curr_nav_container.getVisibility() == View.VISIBLE) {
@@ -441,11 +503,43 @@ public class locationActivity extends Activity implements
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
 
+
+                if (loading) {
+                    if (totalItemCount > previousTotal) {
+                        loading = false;
+                        previousTotal = totalItemCount;
+                        currentPage++;
+
+                    }
+                }
+                if (!loading && (totalItemCount - visibleItemCount) <= (firstVisibleItem + visibleThreshold)) {
+                    // I load the next page of gigs using a background task,
+                    // but you can call any function here.
+
+
+                    //callSearchPhotos(getRadius(), getSort(), getLat(), getLon(), currentPage + 1);
+
+                    updateItemList();
+                    sortingItems(getSort());
+                    showList();
+                    loadExtraData();
+                    showToast();
+
+                    Log.d("ADebugTag", "currentPage: " + currentPage);
+
+                    loading = true;
+                }
+
+
             }
         });
 
-        ButtonsOnFragment();
+        //ButtonsOnFragment();
 
+    }
+
+    public void showToast(){
+        Toast.makeText(this, "Loaded 10 new pictures!", Toast.LENGTH_SHORT).show();
     }
 
     public void ButtonsOnFragment(){
@@ -455,7 +549,7 @@ public class locationActivity extends Activity implements
                 // Perform action on click
                 Log.d("ADebugTag", "test: " + "GPS is clicked");
                 backButton.performClick();
-                Uri gmmIntentUri = Uri.parse("google.navigation:q="+item.getLoc()[0]+", "+item.getLoc()[1]+"&mode=w");
+                Uri gmmIntentUri = Uri.parse("google.navigation:q=" + item.getLoc()[0] + ", " + item.getLoc()[1] + "&mode=w");
                 Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
                 mapIntent.setPackage("com.google.android.apps.maps");
                 startActivity(mapIntent);
@@ -472,7 +566,7 @@ public class locationActivity extends Activity implements
                 nav_loc.setLongitude(item.getLoc()[1]);
                 sendMessageToWear();
                 get_dist_rot(mCurrentLocation, nav_loc);
-                for (RowItem r_item : rowItems) {
+                for (RowItem r_item : rowItemList) {
                     if (r_item.navigating) {
                         r_item.navigating = false;
                     }
@@ -504,7 +598,7 @@ public class locationActivity extends Activity implements
                 curr_nav_container.startAnimation(anim);
                 curr_nav_container.setVisibility(View.VISIBLE);
                 stop_nav.setVisibility(View.VISIBLE);
-                showList(getSort());
+                //showList(getSort());
                 backButton.performClick();
 
 
@@ -517,10 +611,43 @@ public class locationActivity extends Activity implements
                 Log.d("ADebugTag", "test: " + "Back is clicked");
                 flayout.setVisibility(View.INVISIBLE);
                 ll.setAlpha(1.0f);
-                for (int i = 0; i < ll.getChildCount(); i++) {
-                    View child = ll.getChildAt(i);
-                    child.setEnabled(true);
+
+            }
+        });
+
+        frag_upButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                // Perform action on click
+
+                if (fragPosition > 0 ){
+                    showFragments(fragPosition - 1);
+                    fragPosition -= 1;
                 }
+
+
+            }
+        });
+
+        frag_downButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                // Perform action on click
+
+                if ((rowItemList.size() - fragPosition) <= 1){
+
+                    updateItemList();
+                    sortingItems(getSort());
+                    showList();
+                    loadExtraData();
+                    showToast();
+                    fragPosition = -1;
+                    Log.d("ADebugTag", "currentPage: " + currentPage);
+                }
+
+                showFragments(fragPosition + 1);
+                fragPosition += 1;
+
+
+
             }
         });
     }
@@ -535,7 +662,7 @@ public class locationActivity extends Activity implements
 
     public void sendMessageToWear(){
 
-        Log.d("ADebugTag", "test: " + "in Message Servce");
+        //Log.d("ADebugTag", "test: " + "in Message Servce");
 
         Intent sendMsgIntent = new Intent(this, sendMessage.class);
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
@@ -555,7 +682,7 @@ public class locationActivity extends Activity implements
 
     public void sendMessageToWear2(float distance, float compass_rotation){
 
-        Log.d("ADebugTag", "test: " + "in Message Servce 2");
+        //Log.d("ADebugTag", "test: " + "in Message Servce 2");
 
         Intent sendMsgIntent = new Intent(this, sendMessage2.class);
         sendMsgIntent.putExtra("distance", distance);
@@ -570,9 +697,9 @@ public class locationActivity extends Activity implements
     }
 
 
-    public void sortByDistance(){
+    public void sortByDistance() {
 
-        Collections.sort(rowItems, new Comparator<RowItem>() {
+        Collections.sort(rowItemList, new Comparator<RowItem>() {
             @Override
             public int compare(RowItem p1, RowItem p2) {
                 return Float.compare(p1.getDist(), p2.getDist()); // Ascending
@@ -583,31 +710,42 @@ public class locationActivity extends Activity implements
     }
 
     public void sortByFavorite(){
-        Collections.sort(rowItems, new Comparator<RowItem>() {
+        Collections.sort(rowItemList, new Comparator<RowItem>() {
             @Override
             public int compare(RowItem p1, RowItem p2) {
                 return Integer.compare(p1.getFavoriteNum(), p2.getFavoriteNum()); // Ascending
             }
 
         });
-        Collections.reverse(rowItems);
+        Collections.reverse(rowItemList);
 
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-        Log.d("ADebugTag", "showList: " + "im in on click");
-        item = rowItems.get(position);
+        ButtonsOnFragment();
 
+        fragPosition = position;
+
+        Log.d("ADebugTag", "showList: " + "im in on click");
+        //item = rowItemList.get(position);
+        showFragments(position);
+
+        /*
         newFragment = new MyFragment();
         ft = getFragmentManager().beginTransaction();
         ft.replace(R.id.overlay_fragment_container, newFragment).commit();
 
-        for (int i = 0; i < ll.getChildCount(); i++) {
-            View child = ll.getChildAt(i);
-            child.setEnabled(false);
-        }
+        */
+    }
+
+    public void showFragments(int position){
+
+        item = rowItemList.get(position);
+        newFragment = new MyFragment();
+        ft = getFragmentManager().beginTransaction();
+        ft.replace(R.id.overlay_fragment_container, newFragment).commit();
 
     }
 
@@ -655,7 +793,6 @@ public class locationActivity extends Activity implements
 
     }
 
-
     public void onStatusChanged(String provider, int status, Bundle extras) {
 
     }
@@ -695,10 +832,13 @@ public class locationActivity extends Activity implements
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
+        Log.d("ADebugTag", "test: " + "in Destroy in locationActivity");
         if (mGoogleApiClient.isConnected() && mRequestingLocationUpdates) {
             stopLocationUpdates();
         }
         sendMessageToWear_fin();
         mGoogleApiClient.disconnect();
     }
+
 }

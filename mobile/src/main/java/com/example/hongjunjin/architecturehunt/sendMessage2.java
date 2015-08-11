@@ -47,7 +47,10 @@ public class sendMessage2 extends Service {
                                                 CapabilityApi.FILTER_REACHABLE).await();
                                 Set<Node> nodes = capResult.getCapability().getNodes();
                                 for (Node node : nodes) {
+
+                                    Log.d("ADebugTag", "test: " + "in Node");
                                     if (start_intent.getFloatExtra("distance", -1) != -1) {
+                                        Log.d("ADebugTag", "test: " + "in If statement");
                                         float temp = start_intent.getFloatExtra("distance", -1);
                                         byte[] distance = ByteBuffer.allocate(4).putFloat(temp).array();
                                         Wearable.MessageApi.sendMessage(messageAPIclient, node.getId(), RECEIVER_SERVICE_PATH + "/distance",
@@ -56,7 +59,7 @@ public class sendMessage2 extends Service {
                                         byte[] rot = ByteBuffer.allocate(4).putFloat(temp).array();
                                         Wearable.MessageApi.sendMessage(messageAPIclient, node.getId(), RECEIVER_SERVICE_PATH + "/rot",
                                                 rot);
-                                        Log.d("ADebugTag", "DISTROT Message sent");
+                                        Log.d("ADebugTag", "test: " + "finish sendMessage2");
                                     }
                                 }
                             }

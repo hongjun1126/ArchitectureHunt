@@ -27,6 +27,7 @@ public class MyFragment extends Fragment {
         locationActivity.frag_img.setImageBitmap(img);
         locationActivity.frag_name.setText(item.getTitle());
         locationActivity.flayout.setVisibility(View.VISIBLE);
+
     }
 
 }
