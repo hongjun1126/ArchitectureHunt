@@ -3,8 +3,13 @@ package com.example.hongjunjin.architecturehunt;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
+import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -79,6 +84,22 @@ public class CustomList extends ArrayAdapter<RowItem> {
         Bitmap squareRoundBmp = ImageHelper.getRoundedCornerBitmap(bmpSquare, IMAGE_PIXEL);
 
         holder.imageView.setImageBitmap(squareRoundBmp);
+        Bitmap img = rowItem.getBmp();
+        float width = parent.getWidth();
+        float scale = width / img.getWidth();
+
+        img = Bitmap.createScaledBitmap(img, Math.round(width), Math.round(img.getHeight() * scale), true);
+        float density = getContext().getResources().getDisplayMetrics().density;
+        int px = Math.round(80 * density);
+        img = Bitmap.createBitmap(img, 0, img.getHeight() / 3, img.getWidth(), px);
+
+        BitmapDrawable ob = new BitmapDrawable(getContext().getResources(), img);
+        ColorMatrix matrix = new ColorMatrix();
+        matrix.setSaturation(0);
+        ColorMatrixColorFilter filter = new ColorMatrixColorFilter(matrix);
+        ob.setColorFilter(filter);
+        holder.background.setBackground(ob);
+        holder.background.getBackground().setAlpha(30);
         holder.txtDist.setText(rowItem.getDistInString());
         holder.favNumber.setText(rowItem.getFavInString());
         holder.imageStar.setImageResource(R.drawable.flickrccc);

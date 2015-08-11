@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:id="@+id/item_background"
     android:orientation="horizontal" >
-
 
 
     <ImageView
@@ -17,7 +16,8 @@
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:layout_weight="1">
 
         <TextView
             android:id="@+id/title"
@@ -45,30 +45,60 @@
                 android:textColor="@color/Gray"
                 android:textSize="12dp" />
 
-            <TextView
-                android:id="@+id/favorite"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_marginLeft="230dp"
-                android:layout_marginBottom="10dp"
-                android:textColor="@color/Gray"
-                android:textSize="12dp" />
-
-            <ImageView
-                android:id="@+id/star"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:paddingLeft="5dp"
-                android:paddingRight="5dp"
-                android:layout_alignParentBottom="true"
-                android:layout_marginBottom="8dp"
-                android:layout_marginLeft="200dp"/>
         </RelativeLayout>
 
 
     </LinearLayout>
 
+    <RelativeLayout
+        android:layout_width="30dp"
+        android:layout_height="fill_parent"
+        android:layout_alignParentBottom="true"
+        android:background="#77ffffff"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:layout_gravity="center_vertical">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/favorite"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="false"
+                android:textColor="@color/Gray"
+                android:textSize="12dp"
+                android:layout_alignParentRight="false"
+                android:layout_alignParentEnd="false"
+                android:text="#"
+                android:layout_centerInParent="true"
+                android:layout_margin="3dp" />
+
+            <ImageView
+                android:id="@+id/star"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_alignParentBottom="false"
+                android:layout_alignParentEnd="false"
+                android:src="@drawable/flickrccc"
+                android:layout_toLeftOf="@+id/favorite"
+                android:layout_alignParentRight="false"
+                android:layout_centerInParent="true"
+                android:padding="3dp" />
+
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_alignParentBottom="false"
+            android:layout_alignParentEnd="false"
+            android:background="#cfcfcf"></RelativeLayout>
+    </RelativeLayout>
 
 
 </LinearLayout>
