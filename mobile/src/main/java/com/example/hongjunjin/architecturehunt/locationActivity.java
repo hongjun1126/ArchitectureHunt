@@ -227,10 +227,18 @@ public class locationActivity extends Activity implements
                             showList();
                             loadExtraData();
                         }else if (message.obj.equals("loadPages")){
+                            //Log.d("ADebugTag", "in loadPages handler: ");
                             updateItemList();
                             adapter.notifyDataSetChanged();
                             loadExtraData();
                             showToast();
+                        }else if (message.obj.equals("fragLoad")){
+                            updateItemList();
+                            adapter.notifyDataSetChanged();
+                            loadExtraData();
+                            showToast();
+                            showFragments(fragPosition + 1);
+                            fragPosition += 1;
                         }
 
                     }
@@ -425,6 +433,8 @@ public class locationActivity extends Activity implements
 
                             progressDialog.dismiss();
 
+                            Log.d("ADebugTag", "done thread work!");
+
                             Message message = Message.obtain();
                             message.obj = sender;
                             handler.sendMessage(message);
@@ -530,7 +540,7 @@ public class locationActivity extends Activity implements
 
 
                     //callSearchPhotos(getRadius(), getSort(), getLat(), getLon(), currentPage + 1);
-                    progressDialog.show();
+                    //progressDialog.show();
 
                     searchPhotos(getRadius(), getSort(), getLat(), getLon(), currentPage + 1, "loadPages");
 
@@ -650,18 +660,26 @@ public class locationActivity extends Activity implements
 
                 if ((rowItemList.size() - fragPosition) <= 1) {
 
-                    updateItemList();
-                    sortingItems(getSort());
-                    showList();
-                    loadExtraData();
-                    showToast();
-                    fragPosition = -1;
+                   // updateItemList();
+                    //sortingItems(getSort());
+                    //showList();
+                    //loadExtraData();
+                    //showToast();
+
+                    //progressDialog.show();
+
+                    searchPhotos(getRadius(), getSort(), getLat(), getLon(), currentPage + 1, "fragLoad");
+
+
+                    //fragPosition = -1;
                     Log.d("ADebugTag", "currentPage: " + currentPage);
+                }else{
+                    showFragments(fragPosition + 1);
+                    fragPosition += 1;
                 }
 
-                showFragments(fragPosition + 1);
-                fragPosition += 1;
-
+               // showFragments(fragPosition + 1);
+               // fragPosition += 1;
 
 
             }
