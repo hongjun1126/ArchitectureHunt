@@ -2,9 +2,6 @@ package com.example.hongjunjin.architecturehunt;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.inputmethodservice.Keyboard;
-import android.location.Location;
-import android.util.Log;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -26,25 +23,24 @@ import javax.xml.parsers.ParserConfigurationException;
 public class MyThread extends Thread {
 
 
-    protected static final String restURL = "https://api.flickr.com/services/rest/";
+
     protected static final String getSizeMethod = "flickr.photos.getSizes";
     protected static final String getInfoMethod = "flickr.photos.getInfo";
     protected static final String getFavMethod = "flickr.photos.getFavorites";
     protected static final String pictureWidth = "500";
     protected static final String pictureHeight = "500";
-    protected static final int IMAGE_PIXEL = 50;
 
     // using multi-threads to retrieve data from Flickr. Default number of threads I set here is 20
     public void run() {
 
-        long threadId = locationActivity.threadId;
+        long threadId = locationActivity.getThreadId();
 
-        int numThreads = locationActivity.numberOfThreads;
+        int numThreads = locationActivity.getNumberOfThreads();
 
-        NodeList nodeList = locationActivity.nodeList;
-        String lat = locationActivity.lat;
-        String lon = locationActivity.lon;
-        List<RowItem> rowItems = locationActivity.rowItems;
+        NodeList nodeList = locationActivity.getNodeList();
+        String lat = locationActivity.getLat();
+        String lon = locationActivity.getLon();
+        List<RowItem> rowItems = locationActivity.getRowItems();
         int len = nodeList.getLength();
         long currentThreadId = Thread.currentThread().getId();
 
@@ -148,11 +144,11 @@ public class MyThread extends Thread {
                 photoId = nodeList.item(i).getAttributes().item(0).getNodeValue();
                 photoSecret = nodeList.item(i).getAttributes().item(2).getNodeValue();
 
-                StringBuffer photoSizesURL = new StringBuffer(restURL);
+                StringBuffer photoSizesURL = new StringBuffer(Flickr_login.restURL);
                 photoSizesURL.append("?method=");
                 photoSizesURL.append(getSizeMethod);
                 photoSizesURL.append("&api_key=");
-                photoSizesURL.append(Flickr_login.FLICKR_KEY);
+                photoSizesURL.append(Flickr_login.getFlickrKey());
                 photoSizesURL.append("&photo_id=");
                 photoSizesURL.append(photoId);
                 tempURL = photoSizesURL.toString();
@@ -167,11 +163,11 @@ public class MyThread extends Thread {
                     Document photoSizeDoc = b.parse(url.openStream());
                     photoSizeDoc.getDocumentElement().normalize();
 
-                    StringBuffer getInfoBuffer = new StringBuffer(restURL);
+                    StringBuffer getInfoBuffer = new StringBuffer(Flickr_login.restURL);
                     getInfoBuffer.append("?method=");
                     getInfoBuffer.append(getInfoMethod);
                     getInfoBuffer.append("&api_key=");
-                    getInfoBuffer.append(Flickr_login.FLICKR_KEY);
+                    getInfoBuffer.append(Flickr_login.getFlickrKey());
                     getInfoBuffer.append("&photo_id=");
                     getInfoBuffer.append(photoId);
                     getInfoBuffer.append("&secret=");
@@ -183,11 +179,11 @@ public class MyThread extends Thread {
                     Document photoDoc = b.parse(url.openStream());
                     photoDoc.getDocumentElement().normalize();
 
-                    StringBuffer getFavButter = new StringBuffer(restURL);
+                    StringBuffer getFavButter = new StringBuffer(Flickr_login.restURL);
                     getFavButter.append("?method=");
                     getFavButter.append(getFavMethod);
                     getFavButter.append("&api_key=");
-                    getFavButter.append(Flickr_login.FLICKR_KEY);
+                    getFavButter.append(Flickr_login.getFlickrKey());
                     getFavButter.append("&photo_id=");
                     getFavButter.append(photoId);
                     tempURL = getFavButter.toString();
@@ -224,11 +220,6 @@ public class MyThread extends Thread {
                         distance = distFrom(lat1, lng1, lat2, lng2);
                         float loc[] = new float[]{lat2, lng2};
 
-                        //location = new Location("");
-                        //location.setLatitude(lat2);
-                        //location.setLongitude(lng2);
-
-
                         int favNum = Integer.parseInt(favDoc.getDocumentElement().getChildNodes().item(1).getAttributes().item(7).getNodeValue());
 
 
@@ -236,10 +227,6 @@ public class MyThread extends Thread {
                         rowItems.add(item);
 
                     }
-
-
-
-
 
 
                 } catch (MalformedURLException e) {

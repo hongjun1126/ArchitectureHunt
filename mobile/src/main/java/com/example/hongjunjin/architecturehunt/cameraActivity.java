@@ -2,63 +2,47 @@ package com.example.hongjunjin.architecturehunt;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.ContentResolver;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.PopupWindow;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 
-import com.googlecode.flickrjandroid.Flickr;
 import com.googlecode.flickrjandroid.FlickrException;
 import com.googlecode.flickrjandroid.RequestContext;
 import com.googlecode.flickrjandroid.oauth.OAuth;
-import com.googlecode.flickrjandroid.oauth.OAuthInterface;
 import com.googlecode.flickrjandroid.oauth.OAuthToken;
-import com.googlecode.flickrjandroid.people.User;
 import com.googlecode.flickrjandroid.uploader.UploadMetaData;
 import com.googlecode.flickrjandroid.uploader.Uploader;
 
-import org.json.JSONException;
 import org.xml.sax.SAXException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 
 public class cameraActivity extends Activity {
 
     private Uri uriSavedImage;
-    static int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
-    static int CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE = 200;
-    protected final static String UPLOAD_URL = "https://up.flickr.com/services/upload/";
-    protected static  Bitmap bitmap = null;
-    protected static ProgressDialog progress;
+    private Bitmap bitmap;
+    protected static int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
+    protected static int CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE = 200;
+    private ProgressDialog progress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.activity_flickr_login);
 
         Intent imageIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
@@ -87,17 +71,18 @@ public class cameraActivity extends Activity {
 
                 try {
                     bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uriSavedImage);
+                    ImageView img = (ImageView) findViewById(R.id.image);
+                    img.setImageBitmap(bitmap);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                ImageView img = (ImageView) findViewById(R.id.image);
-                img.setImageBitmap(bitmap);
+
 
                 final EditText title = (EditText) findViewById(R.id.title);
                 final EditText description = (EditText) findViewById(R.id.desEdit);
 
                 progress = new ProgressDialog(this);
-                progress.setMessage("Uploading...");
+                progress.setMessage("Loading...");
                 progress.setIndeterminate(true);
                 progress.setCancelable(false);
 
@@ -115,11 +100,11 @@ public class cameraActivity extends Activity {
                             public void run() {
                                 try {
                                     OAuth auth = new OAuth();
-                                    auth.setToken(new OAuthToken(Flickr_login.sharedPref.getString("access_token", null), Flickr_login.sharedPref.getString("access_secret", null)));
+                                    auth.setToken(new OAuthToken(Flickr_login.getSharedPref().getString("access_token", null), Flickr_login.getSharedPref().getString("access_secret", null)));
 
                                     RequestContext.getRequestContext().setOAuth(auth);
 
-                                    Uploader up = new Uploader(Flickr_login.FLICKR_KEY, Flickr_login.FLICKR_SECRET);
+                                    Uploader up = new Uploader(Flickr_login.getFlickrKey(), Flickr_login.getFlickrSecret());
                                     UploadMetaData uploadMetaData = new UploadMetaData();
                                     uploadMetaData.setTitle(title.getText().toString());
                                     uploadMetaData.setDescription(description.getText().toString());
@@ -137,7 +122,7 @@ public class cameraActivity extends Activity {
                                     up.upload("A photo taken using the Building Scavenger", bitmapdata, uploadMetaData);
                                     progress.dismiss();
 
-                                    startSearch();
+                                    startPostActivity();
 
                                 } catch (FlickrException e) {
                                     e.printStackTrace();
@@ -179,7 +164,7 @@ public class cameraActivity extends Activity {
     }
 
 
-    public void startSearch(){
+    public void startPostActivity(){
         Intent postUploadActivity = new Intent(this, postUpload.class);
         startActivity(postUploadActivity);
     }

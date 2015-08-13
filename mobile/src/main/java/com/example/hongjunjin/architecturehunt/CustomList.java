@@ -3,16 +3,11 @@ package com.example.hongjunjin.architecturehunt;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
-import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -28,7 +23,6 @@ import java.util.List;
 public class CustomList extends ArrayAdapter<RowItem> {
 
     Context context;
-    int radius;
     protected static final int IMAGE_PIXEL = 30;
 
     public CustomList(Context context, int resourceId, List<RowItem> items) {
@@ -118,7 +112,7 @@ public class CustomList extends ArrayAdapter<RowItem> {
         }
 
         View[] tiles = new RelativeLayout[walk_amt];
-// get reference to LayoutInflater
+        // get reference to LayoutInflater
         LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         for(int i = 0; i<tiles.length; i++) {

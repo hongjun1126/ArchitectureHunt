@@ -6,14 +6,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import org.scribe.builder.ServiceBuilder;
@@ -31,17 +29,13 @@ import java.io.PrintStream;
 
 public class Flickr_login extends Activity {
 
-    protected static final String FLICKR_KEY = "fc0baa54c996e02f0576193c6c4b313a";
-    protected static final String FLICKR_SECRET = "92b4fb82980e27be";
-    private static final String PROTECTED_RESOURCE_URL = "https://api.flickr.com/services/rest/";
-    protected static Token accessToken;
-    private static OAuthService service;
+    private static final String FLICKR_KEY = "fc0baa54c996e02f0576193c6c4b313a";
+    private static final String FLICKR_SECRET = "92b4fb82980e27be";
+    protected static final String restURL = "https://api.flickr.com/services/rest/";
     private OAuthRequest request;
-    private Button launch_login_button;
-    private Button authorize_button;
-    private EditText edit;
-    private static Token requestToken;
-    protected static SharedPreferences sharedPref;
+    private OAuthService service;
+    private Token requestToken;
+    private static SharedPreferences sharedPref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,8 +46,8 @@ public class Flickr_login extends Activity {
             finish();
         }
         setContentView(R.layout.activity_flickr_login);
-        launch_login_button = (Button) findViewById(R.id.launch_login);
-        request = new OAuthRequest(Verb.GET, PROTECTED_RESOURCE_URL);
+        Button launch_login_button = (Button) findViewById(R.id.launch_login);
+        request = new OAuthRequest(Verb.GET, restURL);
 
         launch_login_button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -66,11 +60,9 @@ public class Flickr_login extends Activity {
                                 .apiSecret(FLICKR_SECRET)
                                 .callback("my-activity://mywebsite.com/")
                                 .build();
-                        // Obtain the Request Token
-                        //Log.d("ADebugTag", "Value: " + "cool");
+
                         requestToken = service.getRequestToken();
                         String authorizationUrl = service.getAuthorizationUrl(requestToken);
-                        //System.out.println(authorizationUrl + "&perms=write");
                         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(authorizationUrl + "&perms=write"));
                         startActivity(browserIntent);
                     }
@@ -91,7 +83,10 @@ public class Flickr_login extends Activity {
         new Thread(new Runnable() {
             @Override
             public void run() {
+
+                Token accessToken;
                 try {
+
                     accessToken = service.getAccessToken(requestToken, verifier);
                     SharedPreferences.Editor editor = sharedPref.edit();
                     editor.putString("access_token", accessToken.getToken());
@@ -103,7 +98,7 @@ public class Flickr_login extends Activity {
                     failed.show();
                     return;
                 }
-                request = new OAuthRequest(Verb.GET, PROTECTED_RESOURCE_URL);
+                request = new OAuthRequest(Verb.GET, restURL);
                 request.addQuerystringParameter("method", "flickr.test.login");
                 service.signRequest(accessToken, request);
                 Response response = request.send();
@@ -124,25 +119,18 @@ public class Flickr_login extends Activity {
     }
 
 
-    public String getFlickrKey(){
-        return this.FLICKR_KEY;
+    public static String getFlickrKey(){
+        return FLICKR_KEY;
     }
 
-    public String getFlickrSecret(){
-        return this.FLICKR_SECRET;
+    public static String getFlickrSecret(){
+        return FLICKR_SECRET;
     }
 
-    public Token getAccessToken(){
-        return this.accessToken;
+    public static SharedPreferences getSharedPref(){
+        return sharedPref;
     }
 
-    public String getProtectedResourceUrl(){
-        return this.PROTECTED_RESOURCE_URL;
-    }
-
-    public OAuthService getService(){
-        return this.service;
-    }
 
 
     @Override

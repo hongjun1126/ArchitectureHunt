@@ -1,14 +1,8 @@
 package com.example.hongjunjin.architecturehunt;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.TextView;
-
-import org.w3c.dom.Text;
-
-import java.util.Calendar;
 
 /**
  * Created by Gordon Lai on 7/30/2015.
