@@ -3,13 +3,10 @@ package com.example.hongjunjin.architecturehunt;
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.ServiceConnection;
 import android.graphics.Bitmap;
-import android.graphics.Matrix;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -18,33 +15,18 @@ import android.os.Bundle;
 
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
-import android.os.Handler;
-import android.os.IBinder;
-import android.os.Message;
-import android.os.Messenger;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.wearable.view.WatchViewStub;
 import android.util.Log;
-import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Locale;
-import java.util.Set;
 import java.util.TimeZone;
-import java.util.Timer;
-import java.util.TimerTask;
+
 
 public class MainActivity extends Activity implements SensorEventListener {
 
@@ -54,18 +36,9 @@ public class MainActivity extends Activity implements SensorEventListener {
     private Sensor mMagnetometer;
     private float[] mLastAccelerometer = new float[3];
     private float[] mLastMagnetometer = new float[3];
-    private boolean mLastAccelerometerSet = false;
-    private boolean mLastMagnetometerSet = false;
-    private float[] mR = new float[9];
-
-    private float[] mOrientation = new float[3];
-    private float mCurrentDegree = 0f;
-    private float start = 0f;
     private Bitmap pic;
     private float[] loc;
     private ImageView bg_pic;
-    private TextView lat;
-    private TextView lng;
     private String photoId;
 
     protected static NotificationManagerCompat notificationManager;
@@ -120,9 +93,10 @@ public class MainActivity extends Activity implements SensorEventListener {
                 mMessageReceiver, new IntentFilter("new_dist_rot"));
 
 
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        //notification();
+
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        notification();
 
 
     }

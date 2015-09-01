@@ -5,7 +5,6 @@ import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.location.Location;
 import android.net.Uri;
@@ -13,7 +12,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.TranslateAnimation;
 import android.widget.AbsListView;
@@ -24,7 +22,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -59,60 +56,43 @@ import javax.xml.parsers.ParserConfigurationException;
 public class locationActivity extends Activity implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener, Serializable, AdapterView.OnItemClickListener {
 
-    protected static final String restURL = "https://api.flickr.com/services/rest/";
+
     protected static final String searchMethod = "flickr.photos.search";
-    protected static final int numberOfThreads = 20;
-    protected static final int defaultPage = 1;
+    private static final int numberOfThreads = 20;
+    private final int defaultPage = 1;
 
 
-    Location mCurrentLocation;
-    LocationRequest mLocationRequest;
+    private Location mCurrentLocation;
+    private LocationRequest mLocationRequest;
     private GoogleApiClient mGoogleApiClient;
     private boolean mRequestingLocationUpdates;
 
-    protected static String lon;
-    protected static String lat;
-    private String radius;
-    private String sort;
+    private static String lon;
+    private static String lat;
+    private static String radius;
+    private static String sort;
 
-    private Flickr_login flickr;
     private ListView lv;
-    protected static List<RowItem> rowItems;
-    protected static List<RowItem> rowItemList;
-    protected static NodeList nodeList;
-    protected static long threadId;
+    private static List<RowItem> rowItems;
+    private List<RowItem> rowItemList;
+    private static NodeList nodeList;
+    private static long threadId;
     private List<Thread> threadList;
-    protected static RowItem item;
-    protected static FrameLayout flayout;
-    protected static Button compassButton;
-    protected static Button GPSbutton;
-    protected static ImageView frag_img;
-    protected static TextView frag_name;
-    protected static Button frag_upButton;
-    protected static Button frag_downButton;
-
-    protected static LinearLayout ll;
-    protected static LinearLayout llItem;
-    protected static RelativeLayout rl;
-
-    protected static Button backButton;
-    protected TextView nav_title;
-    protected ImageView nav_img;
-    protected LinearLayout curr_nav_container;
-
-    protected static Fragment newFragment;
-    protected static FragmentTransaction ft;
+    private static RowItem item;
+    private static FrameLayout flayout;
+    private static ImageView frag_img;
+    private static TextView frag_name;
+    private Button backButton;
+    private LinearLayout curr_nav_container;
     private boolean navigating = false;
     private Location nav_loc;
     private Button stop_nav;
     private CustomList adapter;
-    protected int currentPage;
-    protected ListView lsView;
+    private int currentPage;
     private Handler handler;
     private ProgressDialog progressDialog;
-    private int index;
-    private int top;
     private int fragPosition;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -122,22 +102,11 @@ public class locationActivity extends Activity implements
         Log.d("ADebugTag", "Value: " + "onCreat");
 
 
-        flickr = new Flickr_login();
-
-        compassButton = (Button)findViewById(R.id.compassButton);
-        GPSbutton = (Button)findViewById(R.id.GPSbutton);
         backButton = (Button)findViewById(R.id.backButton);
         frag_img = (ImageView)findViewById(R.id.frag_img);
         frag_name = (TextView) findViewById(R.id.frag_name);
-        frag_upButton = (Button) findViewById(R.id.frag_upButton);
-        frag_downButton = (Button) findViewById(R.id.frag_downButton);
-        ll = (LinearLayout)findViewById(R.id.linearLayer);
-        rl = (RelativeLayout)findViewById(R.id.relativeLayer);
-        llItem = (LinearLayout)findViewById(R.id.item_background);
-        lsView = (ListView) findViewById(R.id.list);
         flayout = (FrameLayout)findViewById(R.id.overlay_fragment_container);
-        nav_img = (ImageView) findViewById(R.id.nav_img);
-        nav_title = (TextView) findViewById(R.id.nav_title);
+
         curr_nav_container = (LinearLayout) findViewById(R.id.curr_nav_container);
         stop_nav = (Button) findViewById(R.id.stop_nav);
         stop_nav.setOnClickListener(new View.OnClickListener() {
@@ -149,6 +118,7 @@ public class locationActivity extends Activity implements
                 stop_nav.setVisibility(View.INVISIBLE);
                 curr_nav_container.setVisibility(View.INVISIBLE);
                 sendMessageToWear_fin();
+
             }
         });
 
@@ -162,10 +132,7 @@ public class locationActivity extends Activity implements
         progressDialog.setIndeterminate(true);
         progressDialog.setCancelable(false);
 
-
     }
-
-
 
     public void spinnerHelper(){
 
@@ -183,13 +150,15 @@ public class locationActivity extends Activity implements
         radius_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         radius_spinner.setAdapter(radius_adapter);
 
-        Spinner sorting_spinner = (Spinner) findViewById(R.id.sorting_spinner);
+        MySpinner sorting_spinner = (MySpinner) findViewById(R.id.sorting_spinner);
         final ArrayAdapter<CharSequence> sorting_adapter = ArrayAdapter.createFromResource(this,
                 R.array.sorting, R.layout.spinner_item);
         sorting_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sorting_spinner.setAdapter(sorting_adapter);
 
         Log.d("ADebugTag", "Value: " + "done spinner");
+
+
 
         radius_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
@@ -201,7 +170,6 @@ public class locationActivity extends Activity implements
                 String radiusNum = radius_selected.substring(0, 1);
                 setRadius(radiusNum);
 
-                System.out.println("in radius spinnerha: " + Thread.currentThread().getName());
                 progressDialog.show();
 
                 rowItemList = new ArrayList<RowItem>();
@@ -217,6 +185,19 @@ public class locationActivity extends Activity implements
                             sortingItems(getSort());
                             showList();
                             loadExtraData();
+                        }else if (message.obj.equals("loadPages")){
+                            //Log.d("ADebugTag", "in loadPages handler: ");
+                            updateItemList();
+                            adapter.notifyDataSetChanged();
+                            loadExtraData();
+                            showToast();
+                        }else if (message.obj.equals("fragLoad")){
+                            updateItemList();
+                            adapter.notifyDataSetChanged();
+                            loadExtraData();
+                            showToast();
+                            showFragments(fragPosition + 1);
+                            fragPosition += 1;
                         }
 
                     }
@@ -231,6 +212,8 @@ public class locationActivity extends Activity implements
             }
 
         });
+
+
 
         sorting_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
@@ -256,9 +239,11 @@ public class locationActivity extends Activity implements
             @Override
             public void onNothingSelected(AdapterView<?> parentView) {
                 // your code here
+                Log.d("ADebugTag", "Value: " + "nothing selected");
             }
 
         });
+
     }
 
     protected void createLocationRequest() {
@@ -284,6 +269,7 @@ public class locationActivity extends Activity implements
         LocationServices.FusedLocationApi.requestLocationUpdates(
                 mGoogleApiClient, mLocationRequest, this);
     }
+
     void set_new_curr_location(Location location) {
         mCurrentLocation = location;
         String latitude = Double.toString(mCurrentLocation.getLatitude());
@@ -294,8 +280,7 @@ public class locationActivity extends Activity implements
 
     @Override
     public void onLocationChanged(Location location) {
-        //Log.d("ADebugTag", "Value: " + "onLocationChange");
-//        Log.d("ADebugTAG", "lOCATION:" + Double.toString(location.getLatitude()) + ", " + Double.toString(location.getLongitude()));
+
         if (navigating) {
             get_dist_rot(location, nav_loc);
         }
@@ -329,7 +314,6 @@ public class locationActivity extends Activity implements
     public void onConnected(Bundle bundle) {
         Log.d("ADebugTag", "Value: " + "onConnected");
         startLocationUpdates();
-
     }
 
     private void searchPhotos(final String radius, String sorting, final String lat, final String lon, final int page, final String sender){
@@ -349,11 +333,11 @@ public class locationActivity extends Activity implements
 
                 String perPage = "10";
 
-                StringBuffer searchBuffer = new StringBuffer(restURL);
+                StringBuffer searchBuffer = new StringBuffer(Flickr_login.restURL);
                 searchBuffer.append("?method=");
                 searchBuffer.append(searchMethod);
                 searchBuffer.append("&api_key=");
-                searchBuffer.append(flickr.getFlickrKey());
+                searchBuffer.append(Flickr_login.getFlickrKey());
                 searchBuffer.append("&tags=architecture");
                 searchBuffer.append("&radius_units=mi");
                 searchBuffer.append("&radius=");
@@ -405,6 +389,8 @@ public class locationActivity extends Activity implements
 
                             progressDialog.dismiss();
 
+                            Log.d("ADebugTag", "done thread work!");
+
                             Message message = Message.obtain();
                             message.obj = sender;
                             handler.sendMessage(message);
@@ -441,10 +427,7 @@ public class locationActivity extends Activity implements
 
     public void sortingItems(String sorting) {
 
-
         Log.d("ADebugTag", "title: " + "in sortingItems");
-
-        //Log.d("ADebugTag", "showList: " + Thread.currentThread().getName());
 
         if (sorting == null || sorting.equals("Distance")) {
             sortByDistance();
@@ -466,14 +449,6 @@ public class locationActivity extends Activity implements
     }
 
     public void loadExtraData(){
-
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                searchPhotos(getRadius(), getSort(), getLat(), getLon(), currentPage + 1, "loadPages");
-            }
-        }).start();
 
 
         lv.setOnItemClickListener(this);
@@ -518,12 +493,16 @@ public class locationActivity extends Activity implements
 
 
                     //callSearchPhotos(getRadius(), getSort(), getLat(), getLon(), currentPage + 1);
+                    //progressDialog.show();
 
-                    updateItemList();
-                    sortingItems(getSort());
-                    showList();
-                    loadExtraData();
-                    showToast();
+                    searchPhotos(getRadius(), getSort(), getLat(), getLon(), currentPage + 1, "loadPages");
+
+                    //updateItemList();
+                    //sortingItems(getSort());
+                    //showList();
+                    //adapter.notifyDataSetChanged();
+                    //loadExtraData();
+                    //showToast();
 
                     Log.d("ADebugTag", "currentPage: " + currentPage);
 
@@ -544,6 +523,11 @@ public class locationActivity extends Activity implements
 
     public void ButtonsOnFragment(){
 
+        Button compassButton = (Button)findViewById(R.id.compassButton);
+        Button GPSbutton = (Button)findViewById(R.id.GPSbutton);
+        Button frag_upButton = (Button) findViewById(R.id.frag_upButton);
+        Button frag_downButton = (Button) findViewById(R.id.frag_downButton);
+
         GPSbutton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // Perform action on click
@@ -560,6 +544,9 @@ public class locationActivity extends Activity implements
             public void onClick(View v) {
                 // Perform action on click
                 Log.d("ADebugTag", "test: " + "Compass is clicked");
+                TextView nav_title = (TextView) findViewById(R.id.nav_title);
+                ImageView nav_img = (ImageView) findViewById(R.id.nav_img);
+
                 navigating = true;
                 nav_loc = new Location("");
                 nav_loc.setLatitude(item.getLoc()[0]);
@@ -609,8 +596,9 @@ public class locationActivity extends Activity implements
             public void onClick(View v) {
                 // Perform action on click
                 Log.d("ADebugTag", "test: " + "Back is clicked");
+                LinearLayout linearLayout = (LinearLayout)findViewById(R.id.linearLayer);
                 flayout.setVisibility(View.INVISIBLE);
-                ll.setAlpha(1.0f);
+                linearLayout.setAlpha(1.0f);
 
             }
         });
@@ -619,7 +607,7 @@ public class locationActivity extends Activity implements
             public void onClick(View v) {
                 // Perform action on click
 
-                if (fragPosition > 0 ){
+                if (fragPosition > 0) {
                     showFragments(fragPosition - 1);
                     fragPosition -= 1;
                 }
@@ -632,20 +620,28 @@ public class locationActivity extends Activity implements
             public void onClick(View v) {
                 // Perform action on click
 
-                if ((rowItemList.size() - fragPosition) <= 1){
+                if ((rowItemList.size() - fragPosition) <= 1) {
 
-                    updateItemList();
-                    sortingItems(getSort());
-                    showList();
-                    loadExtraData();
-                    showToast();
-                    fragPosition = -1;
+                    // updateItemList();
+                    //sortingItems(getSort());
+                    //showList();
+                    //loadExtraData();
+                    //showToast();
+
+                    //progressDialog.show();
+
+                    searchPhotos(getRadius(), getSort(), getLat(), getLon(), currentPage + 1, "fragLoad");
+
+
+                    //fragPosition = -1;
                     Log.d("ADebugTag", "currentPage: " + currentPage);
+                } else {
+                    showFragments(fragPosition + 1);
+                    fragPosition += 1;
                 }
 
-                showFragments(fragPosition + 1);
-                fragPosition += 1;
-
+                // showFragments(fragPosition + 1);
+                // fragPosition += 1;
 
 
             }
@@ -675,7 +671,7 @@ public class locationActivity extends Activity implements
         sendMsgIntent.putExtra("loc", loc.array());
         byte[] idByte = item.getPhotoId().getBytes(StandardCharsets.US_ASCII);
 
-       // Log.d("ADebugTag", "sendMessage photoId: " + item.getPhotoId());
+        // Log.d("ADebugTag", "sendMessage photoId: " + item.getPhotoId());
         sendMsgIntent.putExtra("photoId", idByte);
         startService(sendMsgIntent);
     }
@@ -732,24 +728,18 @@ public class locationActivity extends Activity implements
         //item = rowItemList.get(position);
         showFragments(position);
 
-        /*
-        newFragment = new MyFragment();
-        ft = getFragmentManager().beginTransaction();
-        ft.replace(R.id.overlay_fragment_container, newFragment).commit();
-
-        */
     }
 
     public void showFragments(int position){
 
         item = rowItemList.get(position);
-        newFragment = new MyFragment();
-        ft = getFragmentManager().beginTransaction();
+        Fragment newFragment = new MyFragment();
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
         ft.replace(R.id.overlay_fragment_container, newFragment).commit();
 
     }
 
-    public String getLat(){
+    public static String getLat(){
         return lat;
     }
 
@@ -757,7 +747,7 @@ public class locationActivity extends Activity implements
         this.lat = lat;
     }
 
-    public String getLon(){
+    public static String getLon(){
         return lon;
     }
 
@@ -769,17 +759,50 @@ public class locationActivity extends Activity implements
         this.radius = radius;
     }
 
-    public String getRadius(){
+    public static String getRadius(){
         return radius;
     }
 
-    public String getSort(){
+    public static String getSort(){
         return sort;
     }
 
     public void setSort(String sort){
         this.sort = sort;
     }
+
+    public static RowItem getItem(){
+        return item;
+    }
+
+    public static ImageView getFrag_img(){
+        return frag_img;
+    }
+
+    public static TextView getFrag_name(){
+        return frag_name;
+    }
+
+    public static FrameLayout getFlayout(){
+        return flayout;
+    }
+
+    public static List<RowItem> getRowItems(){
+        return rowItems;
+    }
+
+    public static int getNumberOfThreads(){
+        return numberOfThreads;
+    }
+
+    public static NodeList getNodeList(){
+        return nodeList;
+    }
+
+    public static long getThreadId(){
+        return threadId;
+    }
+
 
     @Override
     public void onConnectionSuspended(int i) {
@@ -790,20 +813,6 @@ public class locationActivity extends Activity implements
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
         mGoogleApiClient.connect();
-
-    }
-
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-
-    }
-
-
-    public void onProviderEnabled(String provider) {
-
-    }
-
-
-    public void onProviderDisabled(String provider) {
 
     }
 

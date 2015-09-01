@@ -43,7 +43,7 @@
                     android:layout_marginBottom="8dp"
                     android:layout_marginTop="10dp"/>
 
-                <Spinner
+                <com.example.hongjunjin.architecturehunt.MySpinner
                     android:id="@+id/sorting_spinner"
                     android:layout_width="220dp"
                     android:layout_height="wrap_content"
@@ -206,6 +206,7 @@
 
                 <Button
                     android:id="@+id/frag_upButton"
+
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:textSize="15dp"
@@ -226,6 +227,7 @@
 
                 <Button
                     android:id="@+id/frag_downButton"
+
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:textSize="15dp"

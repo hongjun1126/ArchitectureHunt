@@ -4,6 +4,7 @@
 
     <application
         android:allowBackup="true"
+        android:largeHeap="true"
         android:icon="@drawable/build_logo"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
